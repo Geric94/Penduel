@@ -2,7 +2,7 @@ import React from 'react'
 
 import styles from '../styles'
 
-const RegisterButton = ( {title, handleClick, restStyles} ) => {
+const CustomButton = ( {title, handleClick, restStyles} ) => {
 	return (
 		<button
 				type="button"
@@ -14,4 +14,4 @@ const RegisterButton = ( {title, handleClick, restStyles} ) => {
 	)
 }
 
-export default RegisterButton
+export default CustomButton

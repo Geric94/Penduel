@@ -1,9 +1,11 @@
 import PageHOC from "./PageHOC";
-import NameInput from "./NameInput";
-import RegisterButton from "./RegisterButton";
+import CustomInput from "./CustomInput";
+import CustomButton from "./CustomButton";
+import Alert from "./Alert";
 
 export {
     PageHOC,
-    NameInput,
-    RegisterButton,
+    CustomInput,
+    CustomButton,
+    Alert,
 }

@@ -14,9 +14,9 @@ async function main() {
   
   console.log(`Deploying a smart contract...`);
 
-  const penduel = (await deploy('Penduel', _metadataUri)).connect(admin);
+  const Penduel = (await deploy('Penduel', _metadataUri)).connect(admin);
 
-  console.log({ Penduel: penduel.address });
+  console.log({ Penduel: Penduel.address });
 }
 
 main()

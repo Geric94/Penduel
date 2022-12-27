@@ -3,10 +3,9 @@ import styles from '../styles'
 
 const regex = /^[A-Za-z0-9]+$/;
 
-const NameInput = ({ Label, placeholder, value, handleValueChange }) => {
-  return (
+const CustomInput = ({ label, placeholder, value, handleValueChange }) => (
     <>
-        <label htmlFor='name' className = {styles.label}>{Label}</label>
+        <label htmlFor="name" className = {styles.label}>{label}</label>
         <input
             type="text"
             placeholder={placeholder}
@@ -17,7 +16,6 @@ const NameInput = ({ Label, placeholder, value, handleValueChange }) => {
             className={styles.input}
         />
     </>
-  )
-}
+);
 
-export default NameInput
+export default CustomInput
