@@ -4,6 +4,7 @@ import astral from './background/astral.jpg';
 import eoaalien from './background/eoaalien.jpg';
 import panight from './background/panight.jpg';
 import heroImg from './background/hero-img.jpg';
+import hangman from './background/hangman-game.png';
 
 // cards
 import ace from './Ace.png';
@@ -94,6 +95,7 @@ export {
   eoaalien,
   panight,
   heroImg,
+  hangman,
 
   ace,
   bakezori,

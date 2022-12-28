@@ -1,13 +1,12 @@
 //HOC Higher Order Comonent
 
-import React from 'react'
+import React from 'react';
 import { useNavigate } from 'react-router-dom';
 
-import { useGlobalContext } from '../context';
-import {logo, heroImg } from '../assets';
-import styles from '../styles';
 import Alert from './Alert';
-
+import { useGlobalContext } from '../context';
+import {logo, hangman } from '../assets';
+import styles from '../styles';
 
 const PageHOC = (Component, title, description) => () => {
   const { showAlert } = useGlobalContext();
@@ -30,10 +29,10 @@ const PageHOC = (Component, title, description) => () => {
           <p className={styles.footerText}>Made with 💜 by JavaScript Mastery</p>
         </div>
         <div className="flex flex-1">
-          <img src={heroImg} alt="hero-img" className="w-full xl:h-full object-cover"/>
+          <img src={hangman} alt="hangman-game" className="w-full xl:h-full object-cover"/>
         </div>
     </div>
-  )
-}
+  );
+};
 
-export default PageHOC
+export default PageHOC;

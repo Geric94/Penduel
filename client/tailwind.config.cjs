@@ -15,6 +15,7 @@ module.exports = {
         eoaalien: "url('/src/assets/background/eoaalien.jpg')",
         panight: "url('/src/assets/background/panight.jpg')",
         heroImg: "url('/src/assets/background/hero-img.jpg')",
+        hangman: "url('/src/assets/background/hangman-game.png')",
         landing: "url('/src/assets/background/landing.jpg')",
       },
       fontFamily: {
