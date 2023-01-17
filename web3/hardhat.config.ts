@@ -1,16 +1,13 @@
-// import { HardhatUserConfig } from "hardhat/config";
-// import "@nomicfoundation/hardhat-toolbox";
-
-// const config: HardhatUserConfig = {
-//   solidity: "0.8.17",
-// };
-
-// export default config;
-
-import dotenv from 'dotenv';
+import { HardhatUserConfig } from "hardhat/config";
+import "@nomicfoundation/hardhat-toolbox";
+import "dotenv/config";
 import '@nomiclabs/hardhat-ethers';
+import "hardhat-gas-reporter"
+import "@typechain/hardhat"
 
-dotenv.config();
+const PRIVATE_KEY = process.env.PRIVATE_KEY || "";
+
+require("hardhat-gas-reporter");
 
 //* Notes for deploying the smart contract on your own subnet
 //* More info on subnets: https://docs.avax.network/subnets
@@ -20,7 +17,7 @@ dotenv.config();
 //* On C-Chain we're relaying on the Avax token to confirm transactions -> on the subnet we can create our own token
 //* You are in complete control over the network and it's inner workings
 
-export default {
+const config: HardhatUserConfig = {
   solidity: {
     version: '0.8.17',
     settings: {
@@ -31,12 +28,18 @@ export default {
       },
     },
   },
+  defaultNetwork: "hardhat",
   networks: {
     fuji: {
       url: 'https://api.avax-test.network/ext/bc/C/rpc',
-      gasPrice: 225000000000,
       chainId: 43113,
-      accounts: [process.env.PRIVATE_KEY],
+      gasPrice: 225000000000,
+      accounts: [PRIVATE_KEY],
+    },
+    localhost: {
+      url: "http://127.0.0.1:8545",
+      chainId: 31337,
+      gasPrice: 'auto',
     },
     // subnet: {
     //   url: process.env.NODE_URL,
@@ -45,4 +48,10 @@ export default {
     //   accounts: [process.env.PRIVATE_KEY],
     // },
   },
+  gasReporter: {
+    // enabled: (process.env.REPORT_GAS) ? true : false
+    enabled: true
+  },
 }
+
+export default config;

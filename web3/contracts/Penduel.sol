@@ -1,10 +1,11 @@
 // SPDX-License-Identifier: MIT
 
-pragma solidity 0.8.17;
+pragma solidity ^0.8.17;
 
 import '@openzeppelin/contracts/token/ERC1155/ERC1155.sol';
 import '@openzeppelin/contracts/access/Ownable.sol';
 import '@openzeppelin/contracts/token/ERC1155/extensions/ERC1155Supply.sol';
+import "hardhat/console.sol";
 
 /// @title Penduel
 /// @notice This contract handles the token management and battle logic for the Penduel game
@@ -28,14 +29,6 @@ contract Penduel is ERC1155, Ownable, ERC1155Supply {
 
   enum BattleStatus{ PENDING, STARTED, ENDED }
 
-  /// @dev GameToken struct to store player token info
-  struct GameToken {
-    string name; /// @param name battle card name; set by player
-    uint256 id; /// @param id battle card token id; will be randomly generated
-    uint256 attackStrength; /// @param attackStrength battle card attack; generated randomly
-    uint256 defenseStrength; /// @param defenseStrength battle card defense; generated randomly
-  }
-
   /// @dev Player struct to store player info
   struct Player {
     address playerAddress; /// @param playerAddress player wallet address
@@ -43,6 +36,14 @@ contract Penduel is ERC1155, Ownable, ERC1155Supply {
     uint256 playerMana; /// @param playerMana player mana; affected by battle results
     uint256 playerHealth; /// @param playerHealth player health; affected by battle results
     bool inBattle; /// @param inBattle boolean to indicate if a player is in battle
+  }
+
+  /// @dev GameToken struct to store player token info
+  struct GameToken {
+    string name; /// @param name battle card name; set by player
+    uint256 id; /// @param id battle card token id; will be randomly generated
+    uint256 attackStrength; /// @param attackStrength battle card attack; generated randomly
+    uint256 defenseStrength; /// @param defenseStrength battle card defense; generated randomly
   }
 
   /// @dev Battle struct to store battle info
@@ -63,6 +64,7 @@ contract Penduel is ERC1155, Ownable, ERC1155Supply {
   GameToken[] public gameTokens; // Array of game tokens
   Battle[] public battles; // Array of battles
 
+  //Player
   function isPlayer(address addr) public view returns (bool) {
     if(playerInfo[addr] == 0) {
       return false;
@@ -80,6 +82,7 @@ contract Penduel is ERC1155, Ownable, ERC1155Supply {
     return players;
   }
 
+  //Token
   function isPlayerToken(address addr) public view returns (bool) {
     if(playerTokenInfo[addr] == 0) {
       return false;

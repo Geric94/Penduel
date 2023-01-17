@@ -22,12 +22,13 @@ const Home = () => {
 					message: `${playerName} is being summoned!`,
 				});
 
-				setTimeout(() => navigate('/create-battle'), 8000);
+				const timer = setTimeout(() => navigate('/create-battle'), 8000);
+				return () => clearTimeout(timer);
 			}
 		} catch (error) {
-      setErrorMessage(error);
-	}
-  };
+			setErrorMessage(error);
+		}
+	};
 
 	useEffect(() => {
 		const createPlayerToken = async () => {
@@ -40,11 +41,11 @@ const Home = () => {
 		if (contract) createPlayerToken();
 	}, [contract]);
 
-  useEffect(() => {
-    if (gameData.activeBattle) {
-      navigate(`/battle/${gameData.activeBattle.name}`);
-    }
-  }, [gameData]);
+	useEffect(() => {
+		if (gameData.activeBattle) {
+		navigate(`/battle/${gameData.activeBattle.name}`);
+		}
+	}, [gameData]);
 
 	return (
     walletAddress && (
@@ -68,6 +69,6 @@ const Home = () => {
 
 export default PageHOC(
 	Home,
-	<>Welcome to Avax Gods <br /> a Web3 NFT Card</>,
-	<>Connect your wallet to start playing <br /> the ultimate Web3 Battle Card Game</>
+	<>Welcome to Alyra <br /> to play Web3 Hangman game</>,
+	<>Connect your wallet to start playing <br /> the ultimate Web3 Penduel Game</>
 );

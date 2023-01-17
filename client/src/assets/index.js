@@ -5,6 +5,8 @@ import eoaalien from './background/eoaalien.jpg';
 import panight from './background/panight.jpg';
 import heroImg from './background/hero-img.jpg';
 import hangman from './background/hangman-game.png';
+import penduel from './background/penduel.gif';
+import game from './background/alyra-letters.png';
 
 // cards
 import ace from './Ace.png';
@@ -37,6 +39,7 @@ import voidTalon from './Void_Talon.png';
 import whiplash from './Whiplash.png';
 import widowmaker from './Widowmaker.png';
 import xho from './Xho.png';
+import man from './man.png';
 
 // logo
 import logo from './logo.svg';
@@ -87,6 +90,7 @@ export const allCards = [
   whiplash,
   widowmaker,
   xho,
+  man,
 ];
 
 export {
@@ -96,7 +100,9 @@ export {
   panight,
   heroImg,
   hangman,
-
+  penduel,
+  game,
+  
   ace,
   bakezori,
   blackSolus,
@@ -127,6 +133,7 @@ export {
   whiplash,
   widowmaker,
   xho,
+  man,
 
   logo,
 
@@ -148,9 +155,13 @@ export const battlegrounds = [
   { id: 'bg-astral', image: astral, name: 'Astral' },
   { id: 'bg-eoaalien', image: eoaalien, name: 'Eoaalien' },
   { id: 'bg-panight', image: panight, name: 'Panight' },
+  { id: 'bg-hangman', image: hangman, name: 'Hangman' },
+  { id: 'bg-penduel', image: penduel, name: 'Penduel' },
+  { id: 'bg-game', image: game, name: 'Game' },
 ];
 
 export const gameRules = [
+  'Use the alphabet below to guess the word, or click hint to get a clue.',
   'Card with the same defense and attack point will cancel each other out.',
   'Attack points from the attacking card will deduct the opposing player’s health points.',
   'If P1 does not defend, their health wil be deducted by P2’s attack.',

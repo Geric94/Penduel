@@ -23,7 +23,8 @@ const styles = {
   // battleground page
   battlegroundContainer: 'min-h-screen bg-landing flex-col py-12 px-4',
   battleGroundsWrapper: 'flex-wrap mt-10 max-w-[1200px]',
-  battleGroundCard: 'sm:w-[420px] w-full h-[260px] p-2 glass-morphism m-4 rounded-lg cursor-pointer battle-card',
+  // battleGroundCard: 'sm:w-[420px] w-full h-[260px] p-2 glass-morphism m-4 rounded-lg cursor-pointer battle-card',
+  battleGroundCard: 'padding :20px; margin-up:20px sm:w-[420px] w-full h-[260px] p-2 glass-morphism m-4 rounded-lg cursor-pointer battle-card',
   battleGroundCardImg: 'w-full h-full object-cover rounded-md',
   battleGroundCardText: 'font-rajdhani font-semibold text-2xl text-white',
 
@@ -47,6 +48,9 @@ const styles = {
   cardPoint: 'font-rajdhani text-[20px] font-bold',
   cardTextContainer: 'absolute w-full bottom-[13.5%] left-3',
   cardText: 'font-rajdhani text-[26px] font-bold text-white',
+  cardMann_in: 'mann_in',
+  cardMann: 'mann',
+  
 
   // custom button component
   btn: 'px-4 py-2 rounded-lg bg-siteViolet w-fit text-white font-rajdhani font-bold',

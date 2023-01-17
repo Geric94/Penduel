@@ -19,6 +19,19 @@
   margin-right: 12px;
 }
 
+.mann_in{
+	float: left;
+	width: 75px;
+	overflow: hidden;
+}
+
+.mann{
+	position: relative;
+	left: -150px;
+  max-width: none;
+	transition:left .3s;
+}
+
 .battle-card {
   position: relative;
   transition: 0.4s ease-out;

@@ -12,16 +12,21 @@ export const GlobalContextProvider = ({ children }) => {
 	const [walletAddress, setWalletAddress] = useState('');
 	const [contract, setContract] = useState(null);
 	const [provider, setProvider] = useState(null);
-  const [gameData, setGameData] = useState({ players: [], pendingBattles: [], activeBattle: null });
+  const [gameData, setGameData] = useState({ players: [], pendingBattles: [], activeBattle: null, currentLetter: null });
 	const [showAlert, setShowAlert] = useState({ status: false, type: "info", message: '' });
 	const [battleName, setBattleName] = useState('');
 	const [errorMessage, setErrorMessage] = useState('');
   const [updateGameData, setUpdateGameData] = useState(0);
+	const [battleGround, setBattleGround] = useState('bg-hangman');
+
+  const player1Ref = useRef();
+  const player2Ref = useRef();
+
 	const navigate = useNavigate();
 
 	//* Set the wallet address to the state
 	const updateCurrentWalletAddress = async () => {
-		const accounts = await window?.ethereum?.request({ method: 'eth_requestAccounts' });
+		const accounts = await window?.ethereum?.request({ method: 'eth_accounts' });
 
 		if (accounts) setWalletAddress(accounts[0]);
 	};
@@ -45,7 +50,8 @@ export const GlobalContextProvider = ({ children }) => {
 			setContract(newContract);
 		};
 
-		setSmartContractAndProvider();
+		const timer = setTimeout( () => setSmartContractAndProvider(), [1000]);
+    return () => clearTimeout(timer);
 	}, []);
 
   //* Activate event listeners for the smart contract
@@ -57,8 +63,8 @@ export const GlobalContextProvider = ({ children }) => {
         provider,
         walletAddress,
         setShowAlert,
-        //player1Ref,
-        //player2Ref,
+        player1Ref,
+        player2Ref,
         setUpdateGameData,
      });
     }
@@ -99,14 +105,28 @@ export const GlobalContextProvider = ({ children }) => {
 		}
 	}, [showAlert]);
 
+  //* Handle error messages
+  useEffect(() => {
+    if (errorMessage) {
+      const parsedErrorMessage = errorMessage?.reason?.slice('execution reverted: '.length).slice(0, -1);
+
+      if (parsedErrorMessage) {
+        setShowAlert({
+          status: true,
+          type: 'failure',
+          message: parsedErrorMessage,
+        });
+      }
+    }
+  }, [errorMessage]);
 
 	return (
     <GlobalContext.Provider
       value={{
-        //player1Ref,
-        //player2Ref,
-        //battleGround,
-        //setBattleGround,
+        player1Ref,
+        player2Ref,
+        battleGround,
+        setBattleGround,
         contract,
         gameData,
         walletAddress,

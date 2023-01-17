@@ -17,6 +17,8 @@ module.exports = {
         heroImg: "url('/src/assets/background/hero-img.jpg')",
         hangman: "url('/src/assets/background/hangman-game.png')",
         landing: "url('/src/assets/background/landing.jpg')",
+        penduel: "url('/src/assets/background/penduel.png')",
+        game: "url('/src/assets/background/alyra-letters.png')",
       },
       fontFamily: {
         rajdhani: ['Rajdhani', 'sans-serif'],

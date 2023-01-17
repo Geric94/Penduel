@@ -1,124 +1,177 @@
-import { time, loadFixture } from "@nomicfoundation/hardhat-network-helpers";
-import { anyValue } from "@nomicfoundation/hardhat-chai-matchers/withArgs";
-import { expect } from "chai";
+import { expect, assert } from "chai";
 import { ethers } from "hardhat";
+import { loadFixture } from "@nomicfoundation/hardhat-network-helpers";
+import { Penduel } from "../typechain-types";
 
-describe("Penduel", function () {
-  // We define a fixture to reuse the same setup in every test.
-  // We use loadFixture to run this setup once, snapshot that state,
-  // and reset Hardhat Network to that snapshot in every test.
-  async function deployOneYearLockFixture() {
-    const ONE_YEAR_IN_SECS = 365 * 24 * 60 * 60;
-    const ONE_GWEI = 1_000_000_000;
+const _metadataUri = 'https://gateway.pinata.cloud/ipfs/https://gateway.pinata.cloud/ipfs/QmX2ubhtBPtYw75Wrpv6HLb1fhbJqxrnbhDo1RViW3oVoi';
 
-    const lockedAmount = ONE_GWEI;
-    const unlockTime = (await time.latest()) + ONE_YEAR_IN_SECS;
+context("Penduel", () => {
+    let penduel: Penduel;
+    // variable qui permet de numéroter nos tests
+    let counter = 1;
 
-    // Contracts are deployed using the first signer/account by default
-    const [owner, otherAccount] = await ethers.getSigners();
+    async function deployPenduelFixture() {
+        //Get accounts
+        const [owner, player1, player2, ...addrs] = await ethers.getSigners();
 
-    const Penduel = await ethers.getContractFactory("Penduel");
-    const lock = await Penduel.deploy(unlockTime, { value: lockedAmount });
+        const Penduel = await ethers.getContractFactory("Penduel");
+        const penduel = await Penduel.deploy(_metadataUri);
 
-    return { lock, unlockTime, lockedAmount, owner, otherAccount };
-  }
+        const contract = await penduel.deployed();
+        //console.log(contract);
+        //console.log(penduel.functions);
+        return { penduel, owner, player1, player2 };         
+    };
 
-  describe("Deployment", function () {
-    it("Should set the right unlockTime", async function () {
-      const { lock, unlockTime } = await loadFixture(deployOneYearLockFixture);
-
-      expect(await lock.unlockTime()).to.equal(unlockTime);
+    describe("Deployment", function () {
+        // on vérifie toutes les variables/constantes de notre contrat
+        it(`${counter++}: admin must be equal to owner`, async function () {
+            const { penduel, owner } = await loadFixture(deployPenduelFixture);
+            const admin = await penduel.owner();
+            expect(admin).to.be.equal(owner.address, `admin is not owner`);
+        });
+        
+        it (`${counter++}: should get the balanceOf owner`, async function () {
+            const { penduel, owner } = await loadFixture(deployPenduelFixture);
+            let balanceOfOwner = await (await penduel.balanceOf(owner.address, 0)).toString();
+            let awaitedBalanceOfOwner = ethers.BigNumber.from('0').toString();
+            assert.equal(balanceOfOwner, awaitedBalanceOfOwner);
+        })
     });
 
-    it("Should set the right owner", async function () {
-      const { lock, owner } = await loadFixture(deployOneYearLockFixture);
+    describe("Players", function () {
+        it(`${counter++}: owner isPlayer must be false`, async function () {
+            const { penduel, owner } = await loadFixture(deployPenduelFixture);
+            const isPlayer = await penduel.isPlayer(owner.address);
+            expect(isPlayer).to.be.equal( false, `isPlayer is not false` );
+        });
 
-      expect(await lock.owner()).to.equal(owner.address);
+        it(`${counter++}:  getPlayer should revert with the right error if called too soon`, async () => {
+            const { penduel, owner } = await loadFixture(deployPenduelFixture);
+            await expect(penduel.getPlayer(owner.address)).to.be.revertedWith("Player doesn't exist!");
+        });
+
+        it(`${counter++}: registerPlayer should return a event NewPlayer`, async () => {
+            const { penduel, owner } = await loadFixture(deployPenduelFixture);
+            await expect( penduel.registerPlayer( "OwnerPlayer", "OwnerToken", { gasLimit: 500000 }))
+                .to.emit(penduel, "NewPlayer")
+                .withArgs( owner.address, "OwnerPlayer");
+        });
+  
+        it(`${counter++}: should return a player struct for the owner player`, async () => {
+            const { penduel, owner } = await loadFixture(deployPenduelFixture);
+            await penduel.registerPlayer("OwnerPlayer", "OwnerToken", { gasLimit: 500000 });
+            const player = await penduel.getPlayer(owner.address);
+            expect(player.playerAddress).to.be.equal(owner.address);
+        });
+    
+        it(`${counter++}: should return a list of all players`, async () => {
+            const { penduel, owner } = await loadFixture(deployPenduelFixture);
+            await penduel.registerPlayer("OwnerPlayer", "OwnerToken", { gasLimit: 500000 });
+            const players = await penduel.getAllPlayers();
+            //two because they have a first in the initalize function
+            expect(players.length).to.be.equal(2);
+        });
     });
 
-    it("Should receive and store the funds to lock", async function () {
-      const { lock, lockedAmount } = await loadFixture(
-        deployOneYearLockFixture
-      );
+    describe("Tokens", function () {
+        it(`${counter++}: owner isPlayerToken must be false`, async function () {
+            const { penduel, owner } = await loadFixture(deployPenduelFixture);
+            const playerTokenExists = await penduel.isPlayerToken(owner.address);
+            expect(playerTokenExists).to.be.equal( false, `isPlayerToken is not false` );
+        });
 
-      expect(await ethers.provider.getBalance(lock.address)).to.equal(
-        lockedAmount
-      );
+        it(`${counter++}: should return a player struct for the owner player`, async () => {
+            const { penduel, owner } = await loadFixture(deployPenduelFixture);
+            await penduel.registerPlayer("OwnerPlayer", "OwnerToken", { gasLimit: 500000 });
+            const GameToken = await penduel.getPlayerToken(owner.address);
+            expect(GameToken.name).to.be.equal('OwnerToken');
+        });
+    
+        it(`${counter++}: should return a list of all tokens`, async () => {
+            const { penduel, owner } = await loadFixture(deployPenduelFixture);
+            await penduel.registerPlayer("OwnerPlayer", "OwnerToken", { gasLimit: 500000 });
+            const tokens = await penduel.getAllPlayerTokens();
+            //two because they have a first in the initalize function
+            //console.log(tokens);
+            expect(tokens.length).to.be.equal(2);
+        });
     });
 
-    it("Should fail if the unlockTime is not in the future", async function () {
-      // We don't use the fixture here because we want a different deployment
-      const latestTime = await time.latest();
-      const Penduel = await ethers.getContractFactory("Penduel");
-      await expect(Penduel.deploy(latestTime, { value: 1 })).to.be.revertedWith(
-        "Unlock time should be in the future"
-      );
+    describe("Battles", function () {
+        it(`${counter++}: getBattle Battle doesn't exist!`, async () => {
+            const { penduel, owner } = await loadFixture(deployPenduelFixture);
+            await expect(penduel.getBattle("Battle1")).to.be.revertedWith("Battle doesn't exist!");
+        });
+            
+        it(`${counter++}: createBattle without player register`, async () => {
+            const { penduel, owner } = await loadFixture(deployPenduelFixture);
+            await expect(penduel.createBattle("Battle1")).to.be.revertedWith("Please Register Player First");
+        });
+
+        it(`${counter++}: getBattle without Battle`, async () => {
+            const { penduel, owner } = await loadFixture(deployPenduelFixture);
+            await penduel.registerPlayer("OwnerPlayer", "OwnerToken", { gasLimit: 500000 });
+            await expect(penduel.getBattle("Battle1")).to.be.revertedWith("Battle doesn't exist!");
+        });
+
+        it(`${counter++}: getBattle with Battle`, async () => {
+            const { penduel, owner } = await loadFixture(deployPenduelFixture);
+            await penduel.registerPlayer("OwnerPlayer", "OwnerToken", { gasLimit: 500000 });
+            const battle = await penduel.createBattle("Battle1");
+            const battleExists = await penduel.getBattle("Battle1");
+            expect(battleExists.name).to.be.equal("Battle1");
+        });
+
+        it(`${counter++}: createBattle already exist`, async () => {
+            const { penduel } = await loadFixture(deployPenduelFixture);
+            await penduel.registerPlayer("OwnerPlayer", "OwnerToken", { gasLimit: 500000 });
+            await penduel.createBattle("Battle1");
+            await expect(penduel.createBattle("Battle1")).to.be.revertedWith("Battle already exists!");
+        });
+
+        it(`${counter++}: jointBattle only player2 can joint battle`, async () => {
+            const { penduel, player1 } = await loadFixture(deployPenduelFixture);
+            await penduel.connect(player1).registerPlayer("OwnerPlayer", "OwnerToken", { gasLimit: 500000 });
+            await penduel.connect(player1).createBattle("Battle1");
+            await expect(penduel.connect(player1).joinBattle("Battle1")).to.be.revertedWith("Only player two can join a battle");
+        });
+
+        it(`${counter++}: jointBattle player2 doen't exist`, async () => {
+            const { penduel, player1, player2 } = await loadFixture(deployPenduelFixture);
+            await penduel.connect(player1).registerPlayer("Player1", "Player1Token", { gasLimit: 500000 });
+            await penduel.connect(player1).createBattle("Battle1");
+            await expect(penduel.connect(player2).joinBattle("Battle1")).to.be.revertedWith("Player doesn't exist!");
+        });
+
+        it(`${counter++}: jointBattle player2 exist`, async () => {
+            const { penduel, player1, player2 } = await loadFixture(deployPenduelFixture);
+            await penduel.connect(player1).registerPlayer("Player1", "Player1Token", { gasLimit: 500000 });
+            await penduel.connect(player1).createBattle("Battle1");
+            await penduel.connect(player2).registerPlayer("Player2", "Player2Token", { gasLimit: 500000 });
+            await penduel.connect(player2).joinBattle("Battle1");
+        });
+
+        it(`${counter++}: jointBattle player1 already in battle`, async () => {
+            const { penduel, player1, player2 } = await loadFixture(deployPenduelFixture);
+            await penduel.connect(player1).registerPlayer("Player1", "Player1Token", { gasLimit: 500000 });
+            await penduel.connect(player1).createBattle("Battle1");
+            await penduel.connect(player2).registerPlayer("Player2", "Player2Token", { gasLimit: 500000 });
+            await penduel.connect(player2).joinBattle("Battle1");
+            await expect(penduel.connect(player1).joinBattle("Battle1")).to.be.revertedWith("Battle already started!");
+        });
+
+        it(`${counter++}: jointBattle player2 already in battle`, async () => {
+            const { penduel, player1, player2 } = await loadFixture(deployPenduelFixture);
+            await penduel.connect(player1).registerPlayer("Player1", "Player1Token", { gasLimit: 500000 });
+            await penduel.connect(player1).createBattle("Battle1");
+            await penduel.connect(player2).registerPlayer("Player2", "Player2Token", { gasLimit: 500000 });
+            await penduel.connect(player2).joinBattle("Battle1");
+            await expect(penduel.connect(player2).joinBattle("Battle1")).to.be.revertedWith("Battle already started!");
+        });
+        //'getAllBattles()': [Function (anonymous)],
+        //'getBattleMoves(string)': [Function (anonymous)],
+        //'quitBattle(string)': [Function (anonymous)],
+      
     });
-  });
-
-  describe("Withdrawals", function () {
-    describe("Validations", function () {
-      it("Should revert with the right error if called too soon", async function () {
-        const { lock } = await loadFixture(deployOneYearLockFixture);
-
-        await expect(lock.withdraw()).to.be.revertedWith(
-          "You can't withdraw yet"
-        );
-      });
-
-      it("Should revert with the right error if called from another account", async function () {
-        const { lock, unlockTime, otherAccount } = await loadFixture(
-          deployOneYearLockFixture
-        );
-
-        // We can increase the time in Hardhat Network
-        await time.increaseTo(unlockTime);
-
-        // We use lock.connect() to send a transaction from another account
-        await expect(lock.connect(otherAccount).withdraw()).to.be.revertedWith(
-          "You aren't the owner"
-        );
-      });
-
-      it("Shouldn't fail if the unlockTime has arrived and the owner calls it", async function () {
-        const { lock, unlockTime } = await loadFixture(
-          deployOneYearLockFixture
-        );
-
-        // Transactions are sent using the first signer by default
-        await time.increaseTo(unlockTime);
-
-        await expect(lock.withdraw()).not.to.be.reverted;
-      });
-    });
-
-    describe("Events", function () {
-      it("Should emit an event on withdrawals", async function () {
-        const { lock, unlockTime, lockedAmount } = await loadFixture(
-          deployOneYearLockFixture
-        );
-
-        await time.increaseTo(unlockTime);
-
-        await expect(lock.withdraw())
-          .to.emit(lock, "Withdrawal")
-          .withArgs(lockedAmount, anyValue); // We accept any value as `when` arg
-      });
-    });
-
-    describe("Transfers", function () {
-      it("Should transfer the funds to the owner", async function () {
-        const { lock, unlockTime, lockedAmount, owner } = await loadFixture(
-          deployOneYearLockFixture
-        );
-
-        await time.increaseTo(unlockTime);
-
-        await expect(lock.withdraw()).to.changeEtherBalances(
-          [owner, lock],
-          [lockedAmount, -lockedAmount]
-        );
-      });
-    });
-  });
 });

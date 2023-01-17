@@ -13,6 +13,7 @@ const AddNewEvent = (eventFilter, provider, cb) => {
 };
 
 export const createEventListeners = ({ navigate, contract, provider, walletAddress, setShowAlert, setUpdateGameData}) => {
+
 	const NewPlayerEventFilter = contract.filters.NewPlayer();
 
 	AddNewEvent(NewPlayerEventFilter, provider, ({ args}) => {
@@ -26,8 +27,9 @@ export const createEventListeners = ({ navigate, contract, provider, walletAddre
 			});
 		}
 	});
-	
+
   const NewBattleEventFilter = contract.filters.NewBattle();
+  
   AddNewEvent(NewBattleEventFilter, provider, ({ args }) => {
     console.log('New battle started!', args, walletAddress);
 
@@ -35,12 +37,12 @@ export const createEventListeners = ({ navigate, contract, provider, walletAddre
       navigate(`/battle/${args.battleName}`);
     }
 
-    setUpdateGameData((prevUpdateGameData) => prevUpdateGameData + 1);
+    setUpdateGameData((updateGameData) => updateGameData + 1);
   });
 
   const NewGameTokenEventFilter = contract.filters.NewGameToken();
   AddNewEvent(NewGameTokenEventFilter, provider, ({ args }) => {
-    console.log('New game token created!', args.owner);
+    //console.log('New game token created!', args);
 
     if (walletAddress.toLowerCase() === args.owner.toLowerCase()) {
       setShowAlert({

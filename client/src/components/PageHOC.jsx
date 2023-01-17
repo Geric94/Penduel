@@ -1,11 +1,11 @@
-//HOC Higher Order Comonent
+//HOC Higher Order Component
 
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import Alert from './Alert';
 import { useGlobalContext } from '../context';
-import {logo, hangman } from '../assets';
+import {logo, penduel } from '../assets';
 import styles from '../styles';
 
 const PageHOC = (Component, title, description) => () => {
@@ -29,7 +29,7 @@ const PageHOC = (Component, title, description) => () => {
           <p className={styles.footerText}>Made with 💜 by JavaScript Mastery</p>
         </div>
         <div className="flex flex-1">
-          <img src={hangman} alt="hangman-game" className="w-full xl:h-full object-cover"/>
+          <img src={penduel} alt="Penduel" className="w-full xl:h-full object-cover"/>
         </div>
     </div>
   );
