@@ -14,19 +14,15 @@ const Home = () => {
 			const playerExists = await contract.isPlayer(walletAddress);
 
 			if (!playerExists) {
-				await contract.registerPlayer(playerName, playerName, { gasLimit: 500000 });
+				await contract.registerPlayer(playerName, playerName+'Token', { gasLimit: 500000 });
 
-				setShowAlert({
-					status: true,
-					type: "info",
-					message: `${playerName} is being summoned!`,
-				});
+				setShowAlert({ status: true, type: "info", message: `${playerName} is being summoned!`, });
 
-				const timer = setTimeout(() => navigate('/create-battle'), 8000);
+				const timer = setTimeout(() => navigate('/create-battle'), 4000);
 				return () => clearTimeout(timer);
 			}
 		} catch (error) {
-			setErrorMessage(error);
+			setErrorMessage(error.message);
 		}
 	};
 
@@ -43,7 +39,7 @@ const Home = () => {
 
 	useEffect(() => {
 		if (gameData.activeBattle) {
-		navigate(`/battle/${gameData.activeBattle.name}`);
+			navigate(`/battle/${gameData.activeBattle.name}`);
 		}
 	}, [gameData]);
 

@@ -11,3 +11,7 @@ REPORT_GAS=true npx hardhat test
 npx hardhat node
 npx hardhat run scripts/deploy.ts
 ```
+https://vrf.chain.link/fuji/546
+
+https://docs.chain.link/vrf/v2/subscription/supported-networks#avalanche-fuji-testnet
+

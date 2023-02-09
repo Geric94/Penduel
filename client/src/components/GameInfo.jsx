@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import CustomButton from './CustomButton';
@@ -18,8 +18,9 @@ const GameInfo = () => {
       await contract.quitBattle(battleName);
 
       setShowAlert({ status: true, type: 'info', message: `You're quitting the ${battleName}` });
+      navigate(`/create-battle`); //EGA marche pas
     } catch (error) {
-      setErrorMessage(error);
+      setErrorMessage(error.message);
     }
   };
 

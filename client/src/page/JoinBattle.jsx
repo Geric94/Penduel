@@ -9,19 +9,20 @@ const JoinBattle = () => {
 	const navigate = useNavigate();
 	const { contract, gameData, setShowAlert, setBattleName, setErrorMessage, walletAddress } = useGlobalContext();
 
-  useEffect(() => {
-    if (gameData?.activeBattle?.battleStatus === 1) navigate(`/battle/${gameData.activeBattle.name}`);
-  }, [gameData]);
+	useEffect(() => {
+		if (gameData?.activeBattle?.battleStatus === 1) 
+			navigate(`/battle/${gameData.activeBattle.name}`);
+	}, [gameData]);
 
 	const handleClick = async (battleName) => {
 		setBattleName(battleName);
 
 		try {
-			await contract.joinBattle(battleName);
+			await contract.joinBattle(battleName, { gasLimit: 300000 });
 
 			setShowAlert({ status: true, type: 'success', message: `Joining ${battleName}` });
 		} catch (error) {
-			setErrorMessage(error);
+			setErrorMessage(error.message);
 		}
 	};
 

@@ -12,12 +12,15 @@ export const GlobalContextProvider = ({ children }) => {
 	const [walletAddress, setWalletAddress] = useState('');
 	const [contract, setContract] = useState(null);
 	const [provider, setProvider] = useState(null);
-  const [gameData, setGameData] = useState({ players: [], pendingBattles: [], activeBattle: null, currentLetter: null });
+//  const [gameData, setGameData] = useState({ players: [], pendingBattles: [], activeBattle: null, currentLetter: null, maskedWord: "" });
+  const [gameData, setGameData] = useState({ pendingBattles: [], activeBattle: null, maskedWord: "coucou" });
 	const [showAlert, setShowAlert] = useState({ status: false, type: "info", message: '' });
 	const [battleName, setBattleName] = useState('');
 	const [errorMessage, setErrorMessage] = useState('');
   const [updateGameData, setUpdateGameData] = useState(0);
-	const [battleGround, setBattleGround] = useState('bg-hangman');
+	const [battleGround, setBattleGround] = useState('bg-penduel');
+	const [maskedWord, setMaskedWord] = useState('');
+	const [incorrectGuesses, setIncorrectGuesses] = useState(0);
 
   const player1Ref = useRef();
   const player2Ref = useRef();
@@ -66,6 +69,8 @@ export const GlobalContextProvider = ({ children }) => {
         player1Ref,
         player2Ref,
         setUpdateGameData,
+        maskedWord, setMaskedWord,
+        incorrectGuesses, setIncorrectGuesses
      });
     }
   }, [contract]);
@@ -73,9 +78,11 @@ export const GlobalContextProvider = ({ children }) => {
 
   //* Set the game data to the state
   useEffect(() => {
+    //go to search the active battle for the player
     const fetchGameData = async () => {
       if (contract) {
         const fetchedBattles = await contract.getAllBattles();
+        // filter only PENDING battle
         const pendingBattles = fetchedBattles.filter((battle) => battle.battleStatus === 0);
         let activeBattle = null;
 
@@ -87,7 +94,8 @@ export const GlobalContextProvider = ({ children }) => {
           }
         });
 
-        setGameData({ pendingBattles: pendingBattles.slice(1), activeBattle });
+        // we don't care of the first battle
+        setGameData({ pendingBattles: pendingBattles.slice(1), activeBattle});
       }
     };
 
@@ -111,11 +119,7 @@ export const GlobalContextProvider = ({ children }) => {
       const parsedErrorMessage = errorMessage?.reason?.slice('execution reverted: '.length).slice(0, -1);
 
       if (parsedErrorMessage) {
-        setShowAlert({
-          status: true,
-          type: 'failure',
-          message: parsedErrorMessage,
-        });
+        setShowAlert({ status: true, type: 'failure', message: parsedErrorMessage, });
       }
     }
   }, [errorMessage]);
@@ -137,6 +141,8 @@ export const GlobalContextProvider = ({ children }) => {
         setBattleName,
         errorMessage,
         setErrorMessage,
+        maskedWord, setMaskedWord,
+        incorrectGuesses, setIncorrectGuesses
     }}
     >
 			{children}

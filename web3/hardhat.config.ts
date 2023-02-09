@@ -35,7 +35,10 @@ const config: HardhatUserConfig = {
       chainId: 43113,
       gasPrice: 225000000000,
       accounts: [PRIVATE_KEY],
-    },
+      //apiKey: {
+        //avalancheFujiTestnet: 'your API key'
+      //},
+      },
     localhost: {
       url: "http://127.0.0.1:8545",
       chainId: 31337,

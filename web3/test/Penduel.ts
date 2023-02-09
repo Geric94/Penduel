@@ -130,21 +130,21 @@ context("Penduel", () => {
             await expect(penduel.createBattle("Battle1")).to.be.revertedWith("Battle already exists!");
         });
 
-        it(`${counter++}: jointBattle only player2 can joint battle`, async () => {
+        it(`${counter++}: joinBattle only player2 can joint battle`, async () => {
             const { penduel, player1 } = await loadFixture(deployPenduelFixture);
             await penduel.connect(player1).registerPlayer("OwnerPlayer", "OwnerToken", { gasLimit: 500000 });
             await penduel.connect(player1).createBattle("Battle1");
             await expect(penduel.connect(player1).joinBattle("Battle1")).to.be.revertedWith("Only player two can join a battle");
         });
 
-        it(`${counter++}: jointBattle player2 doen't exist`, async () => {
+        it(`${counter++}: joinBattle player2 doen't exist`, async () => {
             const { penduel, player1, player2 } = await loadFixture(deployPenduelFixture);
             await penduel.connect(player1).registerPlayer("Player1", "Player1Token", { gasLimit: 500000 });
             await penduel.connect(player1).createBattle("Battle1");
             await expect(penduel.connect(player2).joinBattle("Battle1")).to.be.revertedWith("Player doesn't exist!");
         });
 
-        it(`${counter++}: jointBattle player2 exist`, async () => {
+        it(`${counter++}: joinBattle player2 exist`, async () => {
             const { penduel, player1, player2 } = await loadFixture(deployPenduelFixture);
             await penduel.connect(player1).registerPlayer("Player1", "Player1Token", { gasLimit: 500000 });
             await penduel.connect(player1).createBattle("Battle1");
@@ -152,7 +152,7 @@ context("Penduel", () => {
             await penduel.connect(player2).joinBattle("Battle1");
         });
 
-        it(`${counter++}: jointBattle player1 already in battle`, async () => {
+        it(`${counter++}: joinBattle player1 already in battle`, async () => {
             const { penduel, player1, player2 } = await loadFixture(deployPenduelFixture);
             await penduel.connect(player1).registerPlayer("Player1", "Player1Token", { gasLimit: 500000 });
             await penduel.connect(player1).createBattle("Battle1");
@@ -161,7 +161,7 @@ context("Penduel", () => {
             await expect(penduel.connect(player1).joinBattle("Battle1")).to.be.revertedWith("Battle already started!");
         });
 
-        it(`${counter++}: jointBattle player2 already in battle`, async () => {
+        it(`${counter++}: joinBattle player2 already in battle`, async () => {
             const { penduel, player1, player2 } = await loadFixture(deployPenduelFixture);
             await penduel.connect(player1).registerPlayer("Player1", "Player1Token", { gasLimit: 500000 });
             await penduel.connect(player1).createBattle("Battle1");
@@ -169,6 +169,80 @@ context("Penduel", () => {
             await penduel.connect(player2).joinBattle("Battle1");
             await expect(penduel.connect(player2).joinBattle("Battle1")).to.be.revertedWith("Battle already started!");
         });
+
+        it(`${counter++}: chosenLetter: letter not in the guess`, async () => {
+            const { penduel, player1, player2 } = await loadFixture(deployPenduelFixture);
+            await penduel.connect(player1).registerPlayer("Player1", "Player1Token", { gasLimit: 500000 });
+            await penduel.connect(player1).createBattle("Battle1");
+            await penduel.connect(player2).registerPlayer("Player2", "Player2Token", { gasLimit: 500000 });
+            await penduel.connect(player2).joinBattle("Battle1");
+            await penduel.connect(player1).chosenLetter(new TextEncoder().encode('a'), "Battle1", { gasLimit: 200000 });
+            expect((await penduel.getBattle("Battle1")).maskedWord).to.be.equal('0x675f5f5f5f5f5f'); //  'g______'
+        });
+
+        it(`${counter++}: chosenLetter: letter in the guess`, async () => {
+            const { penduel, player1, player2 } = await loadFixture(deployPenduelFixture);
+            await penduel.connect(player1).registerPlayer("Player1", "Player1Token", { gasLimit: 500000 });
+            await penduel.connect(player1).createBattle("Battle1");
+            await penduel.connect(player2).registerPlayer("Player2", "Player2Token", { gasLimit: 500000 });
+            await penduel.connect(player2).joinBattle("Battle1");
+            await penduel.connect(player1).chosenLetter(new TextEncoder().encode('y'), "Battle1", { gasLimit: 200000 });
+            expect((await penduel.getBattle("Battle1")).maskedWord).to.be.equal('0x675f5f5f5f795f'); //  'g____y_'
+        });
+
+        it(`${counter++}: chosenLetter: It is not your turn`, async () => {
+            const { penduel, player1, player2 } = await loadFixture(deployPenduelFixture);
+            await penduel.connect(player1).registerPlayer("Player1", "Player1Token", { gasLimit: 500000 });
+            await penduel.connect(player1).createBattle("Battle1");
+            await penduel.connect(player2).registerPlayer("Player2", "Player2Token", { gasLimit: 500000 });
+            await penduel.connect(player2).joinBattle("Battle1");
+            await expect(penduel.connect(player2).chosenLetter(new TextEncoder().encode('o'), "Battle1")).to.be.revertedWith("It is not your turn");
+        });
+
+        it(`${counter++}: chosenLetter: bad letter and try an over`, async () => {
+            const { penduel, player1, player2 } = await loadFixture(deployPenduelFixture);
+            await penduel.connect(player1).registerPlayer("Player1", "Player1Token", { gasLimit: 500000 });
+            await penduel.connect(player1).createBattle("Battle1");
+            await penduel.connect(player2).registerPlayer("Player2", "Player2Token", { gasLimit: 500000 });
+            await penduel.connect(player2).joinBattle("Battle1");
+            await penduel.connect(player1).chosenLetter(new TextEncoder().encode('a'), "Battle1", { gasLimit: 200000 });
+            await expect(penduel.connect(player1).chosenLetter(new TextEncoder().encode('b'), "Battle1")).to.be.revertedWith("It is not your turn");
+        });
+
+        it(`${counter++}: chosenLetter: Play a letter already playing`, async () => {
+            const { penduel, player1, player2 } = await loadFixture(deployPenduelFixture);
+            await penduel.connect(player1).registerPlayer("Player1", "Player1Token", { gasLimit: 500000 });
+            await penduel.connect(player1).createBattle("Battle1");
+            await penduel.connect(player2).registerPlayer("Player2", "Player2Token", { gasLimit: 500000 });
+            await penduel.connect(player2).joinBattle("Battle1");
+            await penduel.connect(player1).chosenLetter(new TextEncoder().encode('o'), "Battle1", { gasLimit: 200000 });
+            await penduel.connect(player1).chosenLetter(new TextEncoder().encode('d'), "Battle1", { gasLimit: 200000 });
+            await penduel.connect(player1).chosenLetter(new TextEncoder().encode('b'), "Battle1", { gasLimit: 200000 });
+            await penduel.connect(player1).chosenLetter(new TextEncoder().encode('y'), "Battle1", { gasLimit: 200000 });
+            await penduel.connect(player1).chosenLetter(new TextEncoder().encode('o'), "Battle1", { gasLimit: 200000 }); //WRONG so -> player2
+            await penduel.connect(player2).chosenLetter(new TextEncoder().encode('e'), "Battle1", { gasLimit: 200000 }); //WIN
+            expect((await penduel.getBattle("Battle1")).maskedWord).to.be.equal('0x676f6f64627965'); //  'goodbye'
+            expect((await penduel.getBattle("Battle1")).battleStatus).to.be.equal(2);
+            expect((await penduel.getBattle("Battle1")).winner).to.be.equal(player2.address);
+        });
+
+        it(`${counter++}: chosenLetter: find the word`, async () => {
+            const { penduel, player1, player2 } = await loadFixture(deployPenduelFixture);
+            await penduel.connect(player1).registerPlayer("Player1", "Player1Token", { gasLimit: 500000 });
+            await penduel.connect(player1).createBattle("Battle1");
+            await penduel.connect(player2).registerPlayer("Player2", "Player2Token", { gasLimit: 500000 });
+            await penduel.connect(player2).joinBattle("Battle1");
+            await penduel.connect(player1).chosenLetter(new TextEncoder().encode('o'), "Battle1", { gasLimit: 200000 });
+            await penduel.connect(player1).chosenLetter(new TextEncoder().encode('d'), "Battle1", { gasLimit: 200000 });
+            await penduel.connect(player1).chosenLetter(new TextEncoder().encode('b'), "Battle1", { gasLimit: 200000 });
+            await penduel.connect(player1).chosenLetter(new TextEncoder().encode('y'), "Battle1", { gasLimit: 200000 });
+            await penduel.connect(player1).chosenLetter(new TextEncoder().encode('e'), "Battle1", { gasLimit: 200000 });
+            expect((await penduel.getBattle("Battle1")).maskedWord).to.be.equal('0x676f6f64627965'); //  'goodbye'
+            expect((await penduel.getBattle("Battle1")).battleStatus).to.be.equal(2);
+            expect((await penduel.getBattle("Battle1")).winner).to.be.equal(player1.address);
+        });
+
+        //'getBattle(string)': [Function (anonymous)],
         //'getAllBattles()': [Function (anonymous)],
         //'getBattleMoves(string)': [Function (anonymous)],
         //'quitBattle(string)': [Function (anonymous)],

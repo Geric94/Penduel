@@ -23,10 +23,10 @@ const CreateBattle = () => {
 
     try {
       await contract.createBattle(battleName);
-
       setWaitBattle(true);
+      //console.log({battleName});
     } catch (error) {
-      setErrorMessage(error);
+      setErrorMessage(error.message);
     }
   };
 
