@@ -13,7 +13,7 @@ export const GlobalContextProvider = ({ children }) => {
 	const [contract, setContract] = useState(null);
 	const [provider, setProvider] = useState(null);
 //  const [gameData, setGameData] = useState({ players: [], pendingBattles: [], activeBattle: null, currentLetter: null, maskedWord: "" });
-  const [gameData, setGameData] = useState({ pendingBattles: [], activeBattle: null, maskedWord: "coucou" });
+  const [gameData, setGameData] = useState({ pendingBattles: [], activeBattle: null, maskedWord: "" });
 	const [showAlert, setShowAlert] = useState({ status: false, type: "info", message: '' });
 	const [battleName, setBattleName] = useState('');
 	const [errorMessage, setErrorMessage] = useState('');
@@ -21,6 +21,8 @@ export const GlobalContextProvider = ({ children }) => {
 	const [battleGround, setBattleGround] = useState('bg-penduel');
 	const [maskedWord, setMaskedWord] = useState('');
 	const [incorrectGuesses, setIncorrectGuesses] = useState(0);
+  const [gameOver, setGameOver] = useState(false);
+  const [guesses, setGuesses] = useState([]);
 
   const player1Ref = useRef();
   const player2Ref = useRef();
@@ -70,7 +72,9 @@ export const GlobalContextProvider = ({ children }) => {
         player2Ref,
         setUpdateGameData,
         maskedWord, setMaskedWord,
-        incorrectGuesses, setIncorrectGuesses
+        incorrectGuesses, setIncorrectGuesses,
+        setGameOver,
+        guesses, setGuesses,
      });
     }
   }, [contract]);
@@ -93,7 +97,7 @@ export const GlobalContextProvider = ({ children }) => {
             }
           }
         });
-
+   
         // we don't care of the first battle
         setGameData({ pendingBattles: pendingBattles.slice(1), activeBattle});
       }
@@ -142,7 +146,9 @@ export const GlobalContextProvider = ({ children }) => {
         errorMessage,
         setErrorMessage,
         maskedWord, setMaskedWord,
-        incorrectGuesses, setIncorrectGuesses
+        incorrectGuesses, setIncorrectGuesses,
+        setGameOver,
+        guesses, setGuesses,
     }}
     >
 			{children}

@@ -161,7 +161,7 @@ contract Penduel is ERC1155, Ownable, ERC1155Supply {
   event BattleCreate(string battleName, address indexed player1, address indexed player2);
   event BattleBegin(string battleName, address indexed player1, address indexed player2, string _maskedWord);
   event BattleEnded(string battleName, address indexed winner, address indexed loser);
-  event BattleLetter(bool indexed _findNewLetter, string _maskedWord);
+  event BattleLetter(bool indexed _findNewLetter, string _maskedWord, string _letter);
   event NewGameToken(address indexed owner, uint256 id, uint256 attackStrength, uint256 defenseStrength);
   event RoundEnded(bool _wordIsFind);
   event WordAdded(string wordToAdd);
@@ -364,8 +364,8 @@ contract Penduel is ERC1155, Ownable, ERC1155Supply {
     //_battle = getBattle(_battleName);  //reload after register
     //tests if both players have made their move, if equal 0 the fight can start
     //emit event is first or not, if equal 1, is the first move, we have to wait
-
-    emit BattleLetter(_findNewLetter, getMaskedWord(_battleName));
+    string memory letter = string(abi.encodePacked(_letter));
+    emit BattleLetter(_findNewLetter, getMaskedWord(_battleName), letter);
 
     if (_findNewLetter) {
       _awaitBattleResults(_battleName);

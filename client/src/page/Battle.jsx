@@ -10,15 +10,13 @@ import { player01 as player01Icon, player02 as player02Icon } from '../assets';
 
 const Battle = () => {
 	const { contract, gameData, battleGround, setErrorMessage, showAlert, setShowAlert, player1Ref, player2Ref, 
-		maskedWord, setMaskedWord, incorrectGuesses} = useGlobalContext();
+		maskedWord, setMaskedWord, incorrectGuesses, guesses, gameOver, setGameOver } = useGlobalContext();
 	const [player2, setPlayer2] = useState({});
 	const [player1, setPlayer1] = useState({});
 	const { battleName } = useParams();
 	const navigate = useNavigate();
 	const [currentLetter, setCurrentLetter] = useState('');
 	// Set up state variables using the useState hook
-	const [guesses, setGuesses] = useState([]);
-	const [gameOver, setGameOver] = useState(false);
 	const alphabet = 'abcdefghijklmnopqrstuvwxyz';
 
 	useEffect(() => {
@@ -75,17 +73,18 @@ const Battle = () => {
 		setCurrentLetter(letter1);
 
 		if (gameOver) return; // Do nothing if the game is already over
-		//if (guesses.includes(letter1)) return; // Do nothing if the letter has already been guessed
-
-		// Update the guesses state variable
-		setGuesses([...guesses, letter1]);
-		console.log(guesses);
+		if (guesses.includes(letter1) == true) {
+			setShowAlert({ status: true, type: 'failure', message: `This letter ${letter1} has already been played`, });
+			return; // Do nothing if the letter has already been guessed
+		} else {
+			setShowAlert({ status: true, type: 'info', message: `Chosen letter ${letter1}`});
+		}
 
 		try {
 			let bytes2 = new TextEncoder().encode(letter1);
 			await contract.chosenLetter(bytes2, battleName, { gasLimit: 200000 });
 
-			setShowAlert({ status: true, type: 'info', message: `Chosen letter ${letter1}`, });
+			//setShowAlert({ status: true, type: 'info', message: `Chosen letter ${letter1}`, });
 		} catch (error) {
 			console.log(error, letter1, maskedWord, battleName);
 			setErrorMessage(error.message);

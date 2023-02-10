@@ -6,6 +6,7 @@ import "hardhat-gas-reporter"
 import "@typechain/hardhat"
 
 const PRIVATE_KEY = process.env.PRIVATE_KEY || "";
+const API_KEY_FUJI = process.env.API_KEY_FUJI || "";
 
 require("hardhat-gas-reporter");
 
@@ -35,16 +36,14 @@ const config: HardhatUserConfig = {
       chainId: 43113,
       gasPrice: 225000000000,
       accounts: [PRIVATE_KEY],
-      //apiKey: {
-        //avalancheFujiTestnet: 'your API key'
-      //},
-      },
+      // apiKey: { avalancheFujiTestnet: [API_KEY_FUJI] },
+    },
     localhost: {
       url: "http://127.0.0.1:8545",
       chainId: 31337,
       gasPrice: 'auto',
     },
-    // subnet: {
+    // subnet: {https://api-testnet.snowtrace.io/api?module=contract&action=getabi&address=0x0000000000000000000000000000000000001004&apikey=[API_KEY_FUJI]
     //   url: process.env.NODE_URL,
     //   chainId: Number(process.env.CHAIN_ID),
     //   gasPrice: 'auto',

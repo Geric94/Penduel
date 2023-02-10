@@ -20,11 +20,11 @@ async function main() {
 
   console.log('Penduel contract :', Penduel.address, 'Network:', network.name);
 
-  if (network.name === "fuji") {
-    console.log("Verifying the smart contract");
-    await Penduel.deployTransaction.wait(6);
-    await verify( Penduel.address, []);
-  }
+  // if (network.name === "fuji") {
+  //   console.log("Verifying the smart contract");
+  //   await Penduel.deployTransaction.wait(6);
+  //   await verify( Penduel.address, []);
+  // }
 }
 
 main()

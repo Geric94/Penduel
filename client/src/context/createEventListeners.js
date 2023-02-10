@@ -12,7 +12,8 @@ const AddNewEvent = (eventFilter, provider, cb) => {
 	});
 };
 
-export const createEventListeners = ({ navigate, contract, provider, walletAddress, setShowAlert, setUpdateGameData, setMaskedWord, incorrectGuesses, setIncorrectGuesses}) => {
+export const createEventListeners = ({ navigate, contract, provider, walletAddress, setShowAlert, setUpdateGameData, 
+  setMaskedWord, incorrectGuesses, setIncorrectGuesses, setGameOver, guesses, setGuesses}) => {
 
 	const NewPlayerEventFilter = contract.filters.NewPlayer();
 
@@ -45,6 +46,7 @@ export const createEventListeners = ({ navigate, contract, provider, walletAddre
       navigate(`/battle/${args.battleName}`);
     }
     setMaskedWord(args._maskedWord);
+    guesses.push(args._maskedWord[0]);  //Add the first letter in the guesses
     console.log('BattleBegin:', args._maskedWord);
 
     setUpdateGameData((updateGameData) => updateGameData + 1);
@@ -65,8 +67,13 @@ export const createEventListeners = ({ navigate, contract, provider, walletAddre
   const BattleLetterEventFilter = contract.filters.BattleLetter();
 
   AddNewEvent(BattleLetterEventFilter, provider, ({ args }) => {
-    console.log('New letter guesses!', args._findNewLetter, args._maskedWord );
+    console.log('New letter guesses!', args._findNewLetter, args._maskedWord, args._letter );
     setMaskedWord(args._maskedWord);
+
+ 		// Update the guesses state variable
+    guesses.push(args._letter);
+		//setGuesses(guesses => [...guesses, args._letter]); //ne marche pas
+		console.log(guesses);
 
     if (args._findNewLetter == false){
       setIncorrectGuesses(incorrectGuesses + 1);
