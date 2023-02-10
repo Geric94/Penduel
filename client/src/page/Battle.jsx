@@ -63,10 +63,10 @@ const Battle = () => {
 		if (incorrectGuesses >= 6) {
 			setGameOver(true);
 		} 
-		// else if (maskedWord.split('').every((letter) => guesses.includes(letter))) {
-		// 	setGameOver(true);
-		// }
-	}, [/*guesses,*/ incorrectGuesses]);
+		else if (maskedWord.split('').every((letter) => guesses.includes(letter))) {
+			setGameOver(true);
+		}
+	}, [guesses, incorrectGuesses]);
 
 	// Function to handle player guesses
 	const handleGuess = async (letter1) => {
@@ -93,7 +93,8 @@ const Battle = () => {
 
 	useEffect(() => {
 		const timer = setTimeout(() => {
-			if (!gameData?.activeBattle) navigate('/');
+			if (!gameData?.activeBattle) 
+				navigate('/');
 		}, [2000]);
 
 		return () => clearTimeout(timer);

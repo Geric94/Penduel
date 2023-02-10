@@ -67,16 +67,18 @@ export const createEventListeners = ({ navigate, contract, provider, walletAddre
   const BattleLetterEventFilter = contract.filters.BattleLetter();
 
   AddNewEvent(BattleLetterEventFilter, provider, ({ args }) => {
-    console.log('New letter guesses!', args._findNewLetter, args._maskedWord, args._letter );
+    //console.log('New letter guesses!', args._findNewLetter, args._maskedWord, args._letter );
     setMaskedWord(args._maskedWord);
 
  		// Update the guesses state variable
     guesses.push(args._letter);
 		//setGuesses(guesses => [...guesses, args._letter]); //ne marche pas
-		console.log(guesses);
+		//console.log(guesses);
 
+		console.log(args._findNewLetter, incorrectGuesses);
     if (args._findNewLetter == false){
-      setIncorrectGuesses(incorrectGuesses + 1);
+      //incorrectGuesses = incorrectGuesses + 1;
+      setIncorrectGuesses(incorrectGuesses = incorrectGuesses + 1);
     }
 
     setUpdateGameData((updateGameData) => updateGameData + 1);

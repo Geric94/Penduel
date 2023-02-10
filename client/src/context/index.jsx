@@ -73,7 +73,7 @@ export const GlobalContextProvider = ({ children }) => {
         setUpdateGameData,
         maskedWord, setMaskedWord,
         incorrectGuesses, setIncorrectGuesses,
-        setGameOver,
+        gameOver, setGameOver,
         guesses, setGuesses,
      });
     }
@@ -147,7 +147,7 @@ export const GlobalContextProvider = ({ children }) => {
         setErrorMessage,
         maskedWord, setMaskedWord,
         incorrectGuesses, setIncorrectGuesses,
-        setGameOver,
+        gameOver, setGameOver,
         guesses, setGuesses,
     }}
     >
