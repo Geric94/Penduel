@@ -27,21 +27,21 @@ contract VRFv2Consumer is VRFConsumerBaseV2 {
     bytes32 keyHash;
 
     // Depends on the number of requested values that you want sent to the
-    // fulfillRandomWords() function. Storing each word costs about 20,000 gas,
-    // so 300,000 is a safe default for this example contract. Test and adjust
+    // fulfillRandomWords() function. Storing each word costs about 800,000 gas,
+    // so 900,000 is a safe default for this example contract. Test and adjust
     // this limit based on the network that you select, the size of the request,
     // and the processing of the callback request in the fulfillRandomWords()
     // function.
-    uint32 callbackGasLimit = 300000;
+    uint32 callbackGasLimit = 900000;
 
     // The default is 3, but you can set this higher.
     uint16 requestConfirmations = 3;
 
-    // For this example, retrieve 10 random values in one request.
+    // For this example, retrieve 32 random values in one request.
     // Cannot exceed VRFCoordinatorV2.MAX_NUM_WORDS.
-    uint32 numWords = 10;
+    uint32 numWords = 32;
 
-    uint256[] public s_randomWords;
+    uint256[] public s_randomValues;
     uint256 public s_requestId;
     address public s_owner;
 
@@ -72,15 +72,13 @@ contract VRFv2Consumer is VRFConsumerBaseV2 {
         );
     }
 
-    function fulfillRandomWords(
-        uint256, /* requestId */
-        uint256[] memory randomWords
-    ) internal override {
-        s_randomWords = randomWords;
+    function fulfillRandomWords( uint256, /* requestId */ uint256[] memory randomValue) internal override {
+        s_randomValues = randomValue;
     }
 
     function getRandomValue( uint256 index) external view returns ( uint256) {
-        uint256 words = s_randomWords[index];
-        return words;
+        require( index < 32, 'The index must be less than 32' );
+        uint256 value = s_randomValues[index];
+        return value;
     }
 }

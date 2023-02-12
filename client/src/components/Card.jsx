@@ -9,7 +9,7 @@ const manImg = man;
 const Card = ({ card, title, restStyles, cardRef, playerTwo }) => (
   <Tilt>
       <div className={`${styles.cardMann_in}`}>
-          <img src={manImg} alt="Man" className={`${styles.cardMann}`}/>
+          <img src={manImg} alt="Man" left="-150px" className={`${styles.cardMann}`}/>
       </div>
   </Tilt>
 );

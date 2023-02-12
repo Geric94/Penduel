@@ -2,29 +2,35 @@ import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 
 import styles from '../styles';
-import { Alert, Card, GameInfo, PlayerInfo, CustomButton, AlphabetButtons } from '../components';
+import { Alert, Card, GameInfo, PlayerInfo, WaitPlayer, CustomButton, AlphabetButtons } from '../components';
 import { useGlobalContext } from '../context';
 import { player01 as player01Icon, player02 as player02Icon } from '../assets';
 //import { attack, attackSound, defense, defenseSound, player01 as player01Icon, player02 as player02Icon } from '../assets';
 // import { playAudio } from '../utils/animation.js';
+import man from '../assets/man.png';
+
+const manImg = man;
 
 const Battle = () => {
 	const { contract, gameData, battleGround, setErrorMessage, showAlert, setShowAlert, player1Ref, player2Ref, 
-		maskedWord, setMaskedWord, incorrectGuesses, guesses, gameOver, setGameOver } = useGlobalContext();
+		maskedWord, setMaskedWord, incorrectGuesses, guesses, gameOver, setGameOver, walletAddress } = useGlobalContext();
 	const [player2, setPlayer2] = useState({});
 	const [player1, setPlayer1] = useState({});
 	const { battleName } = useParams();
 	const navigate = useNavigate();
 	const [currentLetter, setCurrentLetter] = useState('');
+	const [waitPlayer, setWaitPlayer] = useState(false);
+
 	// Set up state variables using the useState hook
 	const alphabet = 'abcdefghijklmnopqrstuvwxyz';
 
 	useEffect(() => {
 		const getPlayerInfo = async () => {
 			try {
-				let player01Address = null;
-				let player02Address = null;
-				if (gameData.activeBattle.players[0].toLowerCase() === walletAddress.toLowerCase()) {
+				let player01Address;
+				let player02Address;
+				Wait();
+				if (gameData.activeBattle.players[0].toLowerCase() == walletAddress.toLowerCase()) {
 					player01Address = gameData.activeBattle.players[0];
 					player02Address = gameData.activeBattle.players[1];
 				} else {
@@ -48,12 +54,14 @@ const Battle = () => {
 		
 				setPlayer1({ ...player01, att: p1Att, def: p1Def, health: p1H, mana: p1M });
 				setPlayer2({ ...player02, att: 'X', def: 'X', health: p2H, mana: p2M });
+				console.log('getPlayerInfo:waitPlayer', waitPlayer);			
 			} catch (error) {
 				setErrorMessage(error.message);
 			}
 		};
 
-		if (contract && gameData.activeBattle) getPlayerInfo();
+		if (contract && gameData.activeBattle) 
+			getPlayerInfo();
 	}, [contract, gameData, battleName]);
 	
 		
@@ -62,17 +70,20 @@ const Battle = () => {
 		// Check if the player has won or lost the game
 		if (incorrectGuesses >= 6) {
 			setGameOver(true);
-		} 
-		else if (maskedWord.split('').every((letter) => guesses.includes(letter))) {
-			setGameOver(true);
 		}
+		// else if (maskedWord.split('').every((letter) => guesses.includes(letter))) {
+		// 	setGameOver(true);
+		// }
 	}, [guesses, incorrectGuesses]);
 
 	// Function to handle player guesses
 	const handleGuess = async (letter1) => {
 		setCurrentLetter(letter1);
 
-		if (gameOver) return; // Do nothing if the game is already over
+		if (gameOver) {
+			navigate('/');
+			return; // Do nothing if the game is already over
+		}
 		if (guesses.includes(letter1) == true) {
 			setShowAlert({ status: true, type: 'failure', message: `This letter ${letter1} has already been played`, });
 			return; // Do nothing if the letter has already been guessed
@@ -83,8 +94,6 @@ const Battle = () => {
 		try {
 			let bytes2 = new TextEncoder().encode(letter1);
 			await contract.chosenLetter(bytes2, battleName, { gasLimit: 200000 });
-
-			//setShowAlert({ status: true, type: 'info', message: `Chosen letter ${letter1}`, });
 		} catch (error) {
 			console.log(error, letter1, maskedWord, battleName);
 			setErrorMessage(error.message);
@@ -93,14 +102,26 @@ const Battle = () => {
 
 	useEffect(() => {
 		const timer = setTimeout(() => {
-			if (!gameData?.activeBattle) 
+			if (!gameData?.activeBattle)
 				navigate('/');
 		}, [2000]);
-
+		Wait();
 		return () => clearTimeout(timer);
 	}, []);
 
+	const Wait = async () => {
+		let activePlayerddress = await contract.getActivePlayer(battleName);
+		console.log('getPlayerInfo:getActivePlayer', activePlayerddress);
+		let _waitPlayer = ( activePlayerddress.toLowerCase() != walletAddress.toLowerCase());
+		console.log('getPlayerInfo:activePlayer', activePlayerddress, walletAddress.toLowerCase(), _waitPlayer);
+		setWaitPlayer(waitPlayer => _waitPlayer);
+		console.log('getPlayerInfo:waitPlayer', waitPlayer);	
+	}
+
 	return (
+		<>
+		{waitPlayer && <WaitPlayer />}
+
 		<div className={`${styles.flexBetween} ${styles.gameContainer} ${battleGround}`}>
       		{showAlert?.status && <Alert type={showAlert.type} message={showAlert.message} />}
 
@@ -115,12 +136,15 @@ const Battle = () => {
 		        /> */}
 
 				<h1 className="text-xl test-white">{battleName}</h1>
-				<Card
+				<div className={`${styles.cardMann_in}`}>
+          			<img src={manImg} alt="Man" left="0px" className={`${styles.cardMann}`}/>
+			    </div>
+				{/* <Card
 					card={player1}
 					title={player1?.playerName}
 					cardRef={player1Ref}
 					restStyles="mt-3"
-				/>
+				/> */}
 			{/* </div> */}
 
 			<PlayerInfo player={player2} playerIcon={player02Icon}/>
@@ -133,7 +157,7 @@ const Battle = () => {
 				</p>
 			<br />
 			{/* Display the incorrect guess count */}
-				<p className='text-xl text-white'>Incorrect guesses: {incorrectGuesses}</p>
+				<p className='text-xl text-white'>Incorrect guesses: {incorrectGuesses} {waitPlayer && ',waitPlayer'}</p>
 				<br />
 			<div>
 				{/* Render the keyboard for making guesses */}
@@ -168,6 +192,7 @@ const Battle = () => {
 			<GameInfo />
 
 		</div>
+	</>
   );
 };
 

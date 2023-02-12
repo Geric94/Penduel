@@ -18,7 +18,8 @@ const GameInfo = () => {
       await contract.quitBattle(battleName);
 
       setShowAlert({ status: true, type: 'info', message: `You're quitting the ${battleName}` });
-      navigate(`/create-battle`); //EGA marche pas
+      navigate(`/`);
+      //navigate(`/create-battle`); //EGA marche pas
     } catch (error) {
       setErrorMessage(error.message);
     }

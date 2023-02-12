@@ -32,7 +32,7 @@ contract Penduel is ERC1155, Ownable, ERC1155Supply {
   uint256 public constant CELESTION = 5;
 
   uint256 public constant MAX_ATTACK_DEFEND_STRENGTH = 10;
-  address private _vrf = 0x54Ec7B16a76282403083eF454a02596a4A7f96e4;
+  address private _vrf = 0x11F7aD1DF281604F2bd22ba13E334ca4d14d7C28;
 
   enum BattleStatus{ PENDING, STARTED, ENDED }
 
@@ -303,7 +303,8 @@ contract Penduel is ERC1155, Ownable, ERC1155Supply {
     _battle.activePlayer = _battle.players[0];
     //_word To Guess
     uint256 randomWord = VRFPenduel(_vrf).getRandomValue(battleIndex[_battleName]);
-    uint256 indexRandom = (randomWord % wordsToGuess.length);
+    uint256 boundary = (wordsToGuess.length<32)?wordsToGuess.length:32;
+    uint256 indexRandom = (randomWord % boundary);
     //uint256 indexRandom = battleIndex[_battleName];
     //console.log('wordsToGuess' , wordsToGuess[indexRandom]);
     wordToGuess = wordsToGuess[indexRandom];
@@ -431,8 +432,9 @@ contract Penduel is ERC1155, Ownable, ERC1155Supply {
     players[p2].inBattle = false;
     // players[p2].playerHealth = 25;
     // players[p2].playerMana = 10;
-
-    address _battleLoser = battleWinner == _battle.players[0] ? _battle.players[1] : _battle.players[0];
+    address _battleLoser = address(0x0);
+    if (battleWinner != address(0x0))
+       _battleLoser = battleWinner == _battle.players[0] ? _battle.players[1] : _battle.players[0];
 
     emit BattleEnded(_battle.name, battleWinner, _battleLoser); // Emits BattleEnded event
 

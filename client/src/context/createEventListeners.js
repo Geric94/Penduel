@@ -13,7 +13,7 @@ const AddNewEvent = (eventFilter, provider, cb) => {
 };
 
 export const createEventListeners = ({ navigate, contract, provider, walletAddress, setShowAlert, setUpdateGameData, 
-  setMaskedWord, incorrectGuesses, setIncorrectGuesses, setGameOver, guesses, setGuesses}) => {
+  setMaskedWord, incorrectGuesses, setIncorrectGuesses, setGameOver, guesses}) => {
 
 	const NewPlayerEventFilter = contract.filters.NewPlayer();
 
@@ -75,12 +75,10 @@ export const createEventListeners = ({ navigate, contract, provider, walletAddre
 		//setGuesses(guesses => [...guesses, args._letter]); //ne marche pas
 		//console.log(guesses);
 
-		console.log(args._findNewLetter, incorrectGuesses);
+		console.log(`BattleLetterEventFilter (${args._letter}):`, args._findNewLetter, incorrectGuesses);
     if (args._findNewLetter == false){
-      //incorrectGuesses = incorrectGuesses + 1;
       setIncorrectGuesses(incorrectGuesses = incorrectGuesses + 1);
     }
-
     setUpdateGameData((updateGameData) => updateGameData + 1);
   });
 
