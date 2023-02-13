@@ -6,7 +6,7 @@ import { useGlobalContext } from '../context';
 import { player01, player02 } from '../assets';
 import styles from '../styles';
 
-const WaitPlayer = () => {
+const PendingPlayer = () => {
   const { walletAddress } = useGlobalContext();
   const navigate = useNavigate();
 
@@ -29,4 +29,4 @@ const WaitPlayer = () => {
   );
 };
 
-export default WaitPlayer;
+export default PendingPlayer;
