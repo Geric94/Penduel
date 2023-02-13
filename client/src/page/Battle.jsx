@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 
 import styles from '../styles';
-import { Alert, Card, GameInfo, PlayerInfo, WaitPlayer, CustomButton, AlphabetButtons } from '../components';
+import { Alert, Card, GameInfo, PlayerInfo, PendingPlayer, CustomButton, AlphabetButtons } from '../components';
 import { useGlobalContext } from '../context';
 import { player01 as player01Icon, player02 as player02Icon } from '../assets';
 //import { attack, attackSound, defense, defenseSound, player01 as player01Icon, player02 as player02Icon } from '../assets';
@@ -19,7 +19,7 @@ const Battle = () => {
 	const { battleName } = useParams();
 	const navigate = useNavigate();
 	const [currentLetter, setCurrentLetter] = useState('');
-	const [waitPlayer, setWaitPlayer] = useState(false);
+	const [pendingPlayer, setPendingPlayer] = useState(false);
 
 	// Set up state variables using the useState hook
 	const alphabet = 'abcdefghijklmnopqrstuvwxyz';
@@ -54,7 +54,7 @@ const Battle = () => {
 		
 				setPlayer1({ ...player01, att: p1Att, def: p1Def, health: p1H, mana: p1M });
 				setPlayer2({ ...player02, att: 'X', def: 'X', health: p2H, mana: p2M });
-				console.log('getPlayerInfo:waitPlayer', waitPlayer);			
+				console.log('getPlayerInfo:pendingPlayer', pendingPlayer);			
 			} catch (error) {
 				setErrorMessage(error.message);
 			}
@@ -71,7 +71,7 @@ const Battle = () => {
 		document.documentElement.style.setProperty('--mann-pos', (incorrectGuesses*-75) +"px");
 		if (incorrectGuesses >= 6) {
 			console.log(`incorrectGuesses= ${incorrectGuesses}`);
-			setWaitPlayer(false);
+			setPendingPlayer(false);
 			setGameOver(true);
 		};
 	}, [guesses, incorrectGuesses]);
@@ -122,13 +122,13 @@ const Battle = () => {
 		//console.log('Wait:getActivePlayer', activePlayerddress);
 		let _waitPlayer = ( activePlayerddress?.toLowerCase() != walletAddress.toLowerCase());
 		console.log('Wait:activePlayer', activePlayerddress, walletAddress.toLowerCase(), _waitPlayer);
-		setWaitPlayer(waitPlayer => _waitPlayer);
-		//console.log('Wait:waitPlayer', waitPlayer);	
+		setPendingPlayer(pendingPlayer => _waitPlayer);
+		//console.log('Wait:pendingPlayer', pendingPlayer);	
 	}
 
 	return (
 		<>
-		{waitPlayer && <WaitPlayer />}
+		{pendingPlayer && <PendingPlayer />}
 
 		<div className={`${styles.flexBetween} ${styles.gameContainer} ${battleGround}`}>
       		{showAlert?.status && <Alert type={showAlert.type} message={showAlert.message} />}
@@ -165,7 +165,7 @@ const Battle = () => {
 				</p>
 			<br />
 			{/* Display the incorrect guess count */}
-				<p className='text-xl text-white'>Incorrect guesses: {incorrectGuesses} {waitPlayer && ',waitPlayer'}</p>
+				<p className='text-xl text-white'>Incorrect guesses: {incorrectGuesses} {pendingPlayer && ',pendingPlayer'}</p>
 				<br />
 			<div>
 				{/* Render the keyboard for making guesses */}

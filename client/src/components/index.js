@@ -3,7 +3,7 @@ import Alert from './Alert';
 import PageHOC from './PageHOC';
 import GameInfo from './GameInfo';
 import GameLoad from './GameLoad';
-import WaitPlayer from './WaitPlayer';
+import PendingPlayer from './PendingPlayer';
 import PlayerInfo from './PlayerInfo';
 import CustomInput from './CustomInput';
 import CustomButton from './CustomButton';
@@ -17,7 +17,7 @@ export {
   PageHOC,
   GameInfo,
   GameLoad,
-  WaitPlayer,
+  PendingPlayer,
   PlayerInfo,
   CustomInput,
   CustomButton,
