@@ -1,14 +1,15 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
+//import { useNavigate } from 'react-router-dom';
 
-import CustomButton from './CustomButton';
+//import CustomButton from './CustomButton';
+import { GameInfo } from '../components';
 import { useGlobalContext } from '../context';
 import { player01, player02 } from '../assets';
 import styles from '../styles';
 
 const PendingPlayer = () => {
   const { walletAddress } = useGlobalContext();
-  const navigate = useNavigate();
+  //const navigate = useNavigate();
 
   return (
     <div className={`${styles.flexBetween} ${styles.gameLoadContainer}`}>
@@ -25,6 +26,7 @@ const PendingPlayer = () => {
                 </div>
             </div>
         </div>
+        <GameInfo />        
     </div>
   );
 };

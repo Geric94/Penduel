@@ -29,7 +29,7 @@ const Battle = () => {
 			try {
 				let player01Address;
 				let player02Address;
-				Wait();
+				Pending();
 				if (gameData.activeBattle.players[0].toLowerCase() == walletAddress.toLowerCase()) {
 					player01Address = gameData.activeBattle.players[0];
 					player02Address = gameData.activeBattle.players[1];
@@ -113,17 +113,17 @@ const Battle = () => {
 			if (!gameData?.activeBattle)
 				navigate('/create-battle');
 			}, [2000]);
-		Wait();
+		Pending();
 		return () => clearTimeout(timer);
 	}, []);
 
-	const Wait = async () => {
+	const Pending = async () => {
 		let activePlayerddress = await contract?.getActivePlayer(battleName);
-		//console.log('Wait:getActivePlayer', activePlayerddress);
+		//console.log('Pending:getActivePlayer', activePlayerddress);
 		let _waitPlayer = ( activePlayerddress?.toLowerCase() != walletAddress.toLowerCase());
-		console.log('Wait:activePlayer', activePlayerddress, walletAddress.toLowerCase(), _waitPlayer);
+		console.log('Pending:activePlayer', activePlayerddress, walletAddress.toLowerCase(), _waitPlayer);
 		setPendingPlayer(pendingPlayer => _waitPlayer);
-		//console.log('Wait:pendingPlayer', pendingPlayer);	
+		//console.log('Pending:pendingPlayer', pendingPlayer);	
 	}
 
 	return (
