@@ -61,6 +61,7 @@ export const createEventListeners = ({ navigate, contract, provider, walletAddre
       setShowAlert({ status: true, type: 'success', message: 'Player game token has been successfully generated', });
 
       navigate('/create-battle');
+      setUpdateGameData((updateGameData) => updateGameData + 1);
     }
   });
 
@@ -113,6 +114,8 @@ export const createEventListeners = ({ navigate, contract, provider, walletAddre
     if (walletAddress.toLowerCase() === args.winner.toLowerCase()) {
       setShowAlert({ status: true, type: 'success', message: 'You won!' });
     } else if (walletAddress.toLowerCase() === args.loser.toLowerCase()) {
+      setShowAlert({ status: true, type: 'failure', message: 'You lost!' });
+    } else {
       setShowAlert({ status: true, type: 'failure', message: 'You lost!' });
     }
 

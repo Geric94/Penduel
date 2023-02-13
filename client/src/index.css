@@ -4,6 +4,10 @@
 @tailwind components;
 @tailwind utilities;
 
+:root {
+  --mann-pos: 0px;
+}
+
 * {
   box-sizing: border-box;
   padding: 0;
@@ -27,7 +31,7 @@
 
 .mann{
 	position: relative;
-	left: -150px;
+	left: var(--mann-pos);
   max-width: none;
 	transition:left .3s;
 }

@@ -68,12 +68,12 @@ const Battle = () => {
 	// Use the useEffect hook to listen for updates to the guesses state variable
 	useEffect(() => {
 		// Check if the player has won or lost the game
+		document.documentElement.style.setProperty('--mann-pos', (incorrectGuesses*-75) +"px");
 		if (incorrectGuesses >= 6) {
+			console.log(`incorrectGuesses= ${incorrectGuesses}`);
+			setWaitPlayer(false);
 			setGameOver(true);
-		}
-		// else if (maskedWord.split('').every((letter) => guesses.includes(letter))) {
-		// 	setGameOver(true);
-		// }
+		};
 	}, [guesses, incorrectGuesses]);
 
 	// Function to handle player guesses
@@ -81,8 +81,16 @@ const Battle = () => {
 		setCurrentLetter(letter1);
 
 		if (gameOver) {
-			navigate('/');
-			return; // Do nothing if the game is already over
+			console.log(`You're hanged ${battleName}`);
+			try {
+				await contract._endBattle(null, battleName);
+		  
+				setShowAlert({ status: true, type: 'info', message: `You're hanged ${battleName}` });
+			} catch (error) {
+				setErrorMessage(error);
+			};
+			navigate('/create-battle');
+			return; // Do nothing more if the game is already over
 		}
 		if (guesses.includes(letter1) == true) {
 			setShowAlert({ status: true, type: 'failure', message: `This letter ${letter1} has already been played`, });
@@ -103,19 +111,19 @@ const Battle = () => {
 	useEffect(() => {
 		const timer = setTimeout(() => {
 			if (!gameData?.activeBattle)
-				navigate('/');
-		}, [2000]);
+				navigate('/create-battle');
+			}, [2000]);
 		Wait();
 		return () => clearTimeout(timer);
 	}, []);
 
 	const Wait = async () => {
-		let activePlayerddress = await contract.getActivePlayer(battleName);
-		console.log('getPlayerInfo:getActivePlayer', activePlayerddress);
-		let _waitPlayer = ( activePlayerddress.toLowerCase() != walletAddress.toLowerCase());
-		console.log('getPlayerInfo:activePlayer', activePlayerddress, walletAddress.toLowerCase(), _waitPlayer);
+		let activePlayerddress = await contract?.getActivePlayer(battleName);
+		//console.log('Wait:getActivePlayer', activePlayerddress);
+		let _waitPlayer = ( activePlayerddress?.toLowerCase() != walletAddress.toLowerCase());
+		console.log('Wait:activePlayer', activePlayerddress, walletAddress.toLowerCase(), _waitPlayer);
 		setWaitPlayer(waitPlayer => _waitPlayer);
-		console.log('getPlayerInfo:waitPlayer', waitPlayer);	
+		//console.log('Wait:waitPlayer', waitPlayer);	
 	}
 
 	return (

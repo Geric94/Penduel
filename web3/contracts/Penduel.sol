@@ -392,7 +392,7 @@ contract Penduel is ERC1155, Ownable, ERC1155Supply {
   /// @param _battle battle; battle to resolve
   function _resolveBattle(Battle memory _battle) internal {
     //console.log('resolveBattle', _battle.name);
-    require(_battle.players[0] == msg.sender || _battle.players[1] == msg.sender, "You are not in this battle!");
+    require(_battle.players[0] == msg.sender || _battle.players[1] == msg.sender, "_resolveBattle:You are not in this battle!");
     bool _wordIsFind = false;
 
     _wordIsFind = tryWordToGuess(bytes(wordToGuess), _battle.maskedWord);
@@ -406,7 +406,7 @@ contract Penduel is ERC1155, Ownable, ERC1155Supply {
   function quitBattle(string memory _battleName) public {
     console.log('quitBattle', _battleName);
     Battle memory _battle = getBattle(_battleName);
-    require(_battle.players[0] == msg.sender || _battle.players[1] == msg.sender, "You are not in this battle!");
+    require(_battle.players[0] == msg.sender || _battle.players[1] == msg.sender, "quitBattle:You are not in this battle!");
 
     _battle.players[0] == msg.sender ? _endBattle(_battle.players[1], _battle) : _endBattle(_battle.players[0], _battle);
   }
