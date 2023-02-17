@@ -22,7 +22,7 @@ const Home = () => {
 				return () => clearTimeout(timer);
 			}
 		} catch (error) {
-			setErrorMessage(error.message);
+			setErrorMessage(error);
 		}
 	};
 

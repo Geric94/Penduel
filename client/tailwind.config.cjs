@@ -10,15 +10,10 @@ module.exports = {
         siteWhite: '#9eacc7',
       },
       backgroundImage: {
-        astral: "url('/src/assets/background/astral.jpg')",
-        saiman: "url('/src/assets/background/saiman.jpg')",
-        eoaalien: "url('/src/assets/background/eoaalien.jpg')",
-        panight: "url('/src/assets/background/panight.jpg')",
-        heroImg: "url('/src/assets/background/hero-img.jpg')",
-        hangman: "url('/src/assets/background/hangman-game.png')",
-        landing: "url('/src/assets/background/landing.jpg')",
+        sister: "url('/src/assets/background/sister.jpg')",
+        letters1: "url('/src/assets/background/letters1.png')",
+        letters2: "url('/src/assets/background/letters2.png')",
         penduel: "url('/src/assets/background/penduel.gif')",
-        game: "url('/src/assets/background/alyra-letters.png')",
       },
       fontFamily: {
         rajdhani: ['Rajdhani', 'sans-serif'],

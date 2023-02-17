@@ -1,12 +1,8 @@
 // backgrounds
-import saiman from './background/saiman.jpg';
-import astral from './background/astral.jpg';
-import eoaalien from './background/eoaalien.jpg';
-import panight from './background/panight.jpg';
-import heroImg from './background/hero-img.jpg';
-import hangman from './background/hangman-game.png';
+import sister from './background/sister.jpg';
+import letters1 from './background/letters1.png';
+import letters2 from './background/letters2.png';
 import penduel from './background/penduel.gif';
-import game from './background/alyra-letters.png';
 
 // cards
 import ace from './Ace.png';
@@ -41,8 +37,9 @@ import widowmaker from './Widowmaker.png';
 import xho from './Xho.png';
 import man from './man.png';
 
-// logo
+// logos
 import logo from './logo.svg';
+import alyra from './alyra.png';
 
 // icon
 import attack from './attack.png';
@@ -51,8 +48,8 @@ import alertIcon from './alertIcon.svg';
 import AlertIcon from './AlertIcon.jsx';
 
 // players
-import player01 from './player01.png';
-import player02 from './player02.png';
+import AlyraRedIcon from './AlyraRedIcon.png';
+import AlyraGreenIcon from './AlyraGreenIcon.png';
 
 // sounds
 import attackSound from './sounds/attack.wav';
@@ -94,15 +91,11 @@ export const allCards = [
 ];
 
 export {
-  saiman,
-  astral,
-  eoaalien,
-  panight,
-  heroImg,
-  hangman,
+  sister,
+  letters1,
+  letters2,
   penduel,
-  game,
-  
+
   ace,
   bakezori,
   blackSolus,
@@ -136,14 +129,15 @@ export {
   man,
 
   logo,
+  alyra,
 
   attack,
   defense,
   alertIcon,
   AlertIcon,
 
-  player01,
-  player02,
+  AlyraRedIcon,
+  AlyraGreenIcon,
 
   attackSound,
   defenseSound,
@@ -151,13 +145,10 @@ export {
 };
 
 export const battlegrounds = [
-  { id: 'bg-saiman', image: saiman, name: 'Saiman' },
-  { id: 'bg-astral', image: astral, name: 'Astral' },
-  { id: 'bg-eoaalien', image: eoaalien, name: 'Eoaalien' },
-  { id: 'bg-panight', image: panight, name: 'Panight' },
-  { id: 'bg-hangman', image: hangman, name: 'Hangman' },
+  { id: 'bg-sister', image: sister, name: 'Sister' },
+  { id: 'bg-letters1', image: letters1, name: 'Letters1' },
+  { id: 'bg-letters2', image: letters2, name: 'Letters2' },
   { id: 'bg-penduel', image: penduel, name: 'Penduel' },
-  { id: 'bg-game', image: game, name: 'Game' },
 ];
 
 export const gameRules = [

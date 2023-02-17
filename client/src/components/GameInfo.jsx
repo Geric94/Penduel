@@ -7,21 +7,22 @@ import { alertIcon, gameRules } from '../assets';
 import styles from '../styles';
 
 const GameInfo = () => {
-  const { contract, gameData, setErrorMessage, setShowAlert } = useGlobalContext();
+  const { contract, battleName, setErrorMessage, setShowAlert } = useGlobalContext();
   const [toggleSidebar, setToggleSidebar] = useState(false);
   const navigate = useNavigate();
 
   const handleBattleExit = async () => {
-    const battleName = gameData.activeBattle.name;
+    //const battleName = gameData.activeBattle.name;
 
     try {
+      setShowAlert({ status: true, type: 'info', message: `You're quitting the ${battleName}` });
+
       await contract.quitBattle(battleName);
 
-      setShowAlert({ status: true, type: 'info', message: `You're quitting the ${battleName}` });
       navigate(`/`);
       //navigate(`/create-battle`); //EGA marche pas
     } catch (error) {
-      setErrorMessage(error.message);
+      setErrorMessage(error);
     }
   };
 

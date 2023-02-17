@@ -36,7 +36,7 @@ const styles = {
   // player info component
   playerImg: 'w-14 h-14 object-contain rounded-full',
   playerHealth: 'flex flex-row bg-white rounded-md p-2 sm:min-w-[512px] min-w-[312px] sm:min-h-[48px] min-h-[40px] bg-opacity-10 backdrop-filter backdrop-blur-lg mx-3',
-  playerHealthBar: 'sm:w-4 w-2 sm:h-8 h-6 rounded-sm',
+  playerHealthBar: 'sm:w-20 w-2 sm:h-8 h-6 rounded-sm',
   playerMana: 'w-14 h-14 rounded-full text-white font-rajdhani font-extrabold text-2xl cursor-pointer',
   playerInfo: 'font-rajdhani font-medium',
   playerInfoSpan: 'font-extrabold text-white',
@@ -52,8 +52,12 @@ const styles = {
   cardMann: 'mann',
   
 
-  // custom button component
+  // custom button component tracking-widest --tw-text-opacity --tw-bg-opacity
   btn: 'px-4 py-2 rounded-lg bg-siteViolet w-fit text-white font-rajdhani font-bold',
+  letter: 'px-1 py-1 rounded-lg bg-siteViolet w-fit text-2xl font-rajdhani font-bold mt-1 ml-1 mr-1 mb-1',
+  guesses: 'text-white tracking-widest',
+  guess: 'guess',
+  guessChecked: 'text-white guessChecked',
 
   // custom input component
   label: 'font-rajdhani font-semibold text-2xl text-white mb-3',

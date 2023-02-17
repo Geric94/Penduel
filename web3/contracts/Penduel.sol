@@ -63,6 +63,7 @@ contract Penduel is ERC1155, Ownable, ERC1155Supply {
     //uint8[2] moves; /// @param moves uint array representing players' move
     address winner; /// @param winner winner address
     bytes maskedWord; /// @param maskedWord word to find
+    string guesses; /// @param guesses list of letter tested
   }
 
   string[] wordsToGuess = [
@@ -156,12 +157,17 @@ contract Penduel is ERC1155, Ownable, ERC1155Supply {
     return string(battles[battleIndex[_battleName]].maskedWord);
   }
 
+  function getGuesses(string memory _battleName) public view returns (string memory _guesses) {
+    require(isBattle(_battleName), "Battle doesn't exist!");
+    return string(battles[battleIndex[_battleName]].guesses);
+  }
+
   // Events
   event NewPlayer(address indexed owner, string playerName);
   event BattleCreate(string battleName, address indexed player1, address indexed player2);
   event BattleBegin(string battleName, address indexed player1, address indexed player2, string _maskedWord);
   event BattleEnded(string battleName, address indexed winner, address indexed loser);
-  event BattleLetter(bool indexed _findNewLetter, string _maskedWord, string _letter);
+  event BattleLetter(bool indexed _findNewLetter, string _maskedWord, string _guesses);
   event NewGameToken(address indexed owner, uint256 id, uint256 attackStrength, uint256 defenseStrength);
   event RoundEnded(bool _wordIsFind);
   event WordAdded(string wordToAdd);
@@ -181,7 +187,7 @@ contract Penduel is ERC1155, Ownable, ERC1155Supply {
   function initialize() private {
     gameTokens.push(GameToken("", 0, 0, 0));
     players.push(Player(address(0), "", 0, 0, false));
-    battles.push(Battle(BattleStatus.PENDING, bytes32(0), "", [address(0), address(0)], address(0), address(0), ""));
+    battles.push(Battle(BattleStatus.PENDING, bytes32(0), "", [address(0), address(0)], address(0), address(0), "", string("")));
     //VRFPenduel(_vrf).requestRandomWords();
   }
 
@@ -192,7 +198,7 @@ contract Penduel is ERC1155, Ownable, ERC1155Supply {
     require(!isPlayer(msg.sender), "Player already registered"); // Require that player is not already registered
     
     uint256 _id = players.length;
-    players.push(Player(msg.sender, _playerName, 10, 25, false)); // Adds player to players array
+    players.push(Player(msg.sender, _playerName, 10, 6, false)); // Adds player to players array
     playerIndex[msg.sender] = _id; // Creates player info mapping
 
     createRandomGameToken(_gameTokenName);
@@ -279,7 +285,8 @@ contract Penduel is ERC1155, Ownable, ERC1155Supply {
       [msg.sender, address(0)], // player addresses; player 2 empty until they joins battle
       msg.sender, // address of active player
       address(0), // winner address; empty until battle ends
-      bytes("") //empty string
+      bytes(""), //empty string
+      string("")
     );
 
     uint256 _id = battles.length;
@@ -309,6 +316,8 @@ contract Penduel is ERC1155, Ownable, ERC1155Supply {
     //console.log('wordsToGuess' , wordsToGuess[indexRandom]);
     wordToGuess = wordsToGuess[indexRandom];
     _battle.maskedWord = underscores(bytes(wordToGuess));
+    string memory letter = string(abi.encodePacked(_battle.maskedWord[0]));
+    _battle.guesses = string(letter);
 
     updateBattle(_battleName, _battle);
 
@@ -355,18 +364,30 @@ contract Penduel is ERC1155, Ownable, ERC1155Supply {
 
     //console.log('chosenLetter avant switch: ActivePlayer',  getActivePlayer(_battleName), _findNewLetter);
     //Player find a letter can reply
-    if (!_findNewLetter)
-       _battle.activePlayer = _switchActivePlayer(_battleName);
-    //console.log('chosenLetter apres switch: ActivePlayer',  _battle.activePlayer, getActivePlayer(_battleName));
-    updateBattle(_battleName, _battle);
-    //console.log('chosenLetter apres updateBattle: ActivePlayer',  _battle.activePlayer, getActivePlayer(_battleName));
-    //console.log('new maskedWord',  string(_battle.maskedWord));
+    if (!_findNewLetter) {
+      uint indexP1 = playerIndex[_battle.players[0]];
+      uint indexP2 = playerIndex[_battle.players[1]];
+      console.log(indexP1, indexP2);
 
-    //_battle = getBattle(_battleName);  //reload after register
-    //tests if both players have made their move, if equal 0 the fight can start
-    //emit event is first or not, if equal 1, is the first move, we have to wait
+      if (players[indexP1].playerAddress == _battle.activePlayer) {
+        players[indexP1].playerHealth -= 1;
+        console.log(players[indexP1].playerHealth);
+      }
+      else if (players[indexP2].playerAddress == _battle.activePlayer) {
+        players[indexP2].playerHealth -= 1;
+        console.log(players[indexP2].playerHealth);
+      } else {
+        console.log("error: !_findNewLetter");
+      }
+
+      _battle.activePlayer = _switchActivePlayer(_battleName);
+    }
     string memory letter = string(abi.encodePacked(_letter));
-    emit BattleLetter(_findNewLetter, getMaskedWord(_battleName), letter);
+    _battle.guesses = string.concat(_battle.guesses, letter);
+
+    updateBattle(_battleName, _battle);
+
+    emit BattleLetter(_findNewLetter, getMaskedWord(_battleName), _battle.guesses);
 
     if (_findNewLetter) {
       _awaitBattleResults(_battleName);
@@ -426,14 +447,15 @@ contract Penduel is ERC1155, Ownable, ERC1155Supply {
     uint p2 = playerIndex[_battle.players[1]];
 
     players[p1].inBattle = false;
-    // players[p1].playerHealth = 25;
-    // players[p1].playerMana = 10;
+    players[p1].playerHealth = 6;
+    players[p1].playerMana = 10;
 
     players[p2].inBattle = false;
-    // players[p2].playerHealth = 25;
-    // players[p2].playerMana = 10;
+    players[p2].playerHealth = 6;
+    players[p2].playerMana = 10;
+
     address _battleLoser = address(0x0);
-    if (battleWinner != address(0x0))
+    //if (_battle.activePlayer)
        _battleLoser = battleWinner == _battle.players[0] ? _battle.players[1] : _battle.players[0];
 
     emit BattleEnded(_battle.name, battleWinner, _battleLoser); // Emits BattleEnded event

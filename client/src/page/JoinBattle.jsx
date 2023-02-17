@@ -22,7 +22,7 @@ const JoinBattle = () => {
 
 			setShowAlert({ status: true, type: 'success', message: `Joining ${battleName}` });
 		} catch (error) {
-			setErrorMessage(error.message);
+			setErrorMessage(error);
 		}
 	};
 
@@ -42,9 +42,9 @@ const JoinBattle = () => {
 								  handleClick={() => handleClick(battle.name)}
 								/>
 							</div>
-						)) : (
-							<p className={styles.joinLoading}>Reload the page to see new battles</p>
-					)}
+						)) 
+					: (<p className={styles.joinLoading}>Reload the page to see new battles</p>)
+				}
 			</div>
 
 			<p className={styles.infoText} onClick={() => navigate('/create-battle')}>
@@ -56,6 +56,6 @@ const JoinBattle = () => {
 
 export default PageHOC(
 	JoinBattle,
-	<>Join <br /> a Battle</>,
+	<>Join a Battle</>,
 	<>Join already existing battles</>,
 );

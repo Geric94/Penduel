@@ -4,9 +4,10 @@ import { useNavigate } from 'react-router-dom';
 import styles from '../styles';
 import { useGlobalContext } from '../context';
 import { CustomButton, CustomInput, GameLoad, PageHOC } from '../components';
+//import { walletconnect } from 'web3modal/dist/providers/connectors';
 
 const CreateBattle = () => {
-  const { contract, gameData, battleName, setBattleName, setErrorMessage } = useGlobalContext();
+  const { contract, walletAddress, gameData, battleName, setBattleName, setErrorMessage } = useGlobalContext();
   const [waitBattle, setWaitBattle] = useState(false);
   const navigate = useNavigate();
 
@@ -22,11 +23,11 @@ const CreateBattle = () => {
     if (battleName === '' || battleName.trim() === '') return null;
 
     try {
-      await contract.createBattle(battleName);
-      setWaitBattle(true);
-      //console.log({battleName});
+       await contract.createBattle(battleName);
+       setWaitBattle(true);
     } catch (error) {
-      setErrorMessage(error.message);
+      setErrorMessage(error);
+      navigate('/');
     }
   };
 
@@ -57,6 +58,6 @@ const CreateBattle = () => {
 
 export default PageHOC(
   CreateBattle,
-  <>Create <br /> a new Battle</>,
+  <>Create a new Battle</>,
   <>Create your own battle and wait for other players to join you</>,
 );

@@ -13,7 +13,7 @@ const AddNewEvent = (eventFilter, provider, cb) => {
 };
 
 export const createEventListeners = ({ navigate, contract, provider, walletAddress, setShowAlert, setUpdateGameData, 
-  setMaskedWord, incorrectGuesses, setIncorrectGuesses, setGameOver, guesses}) => {
+  setMaskedWord, incorrectGuesses, setIncorrectGuesses, setGameOver, setGuesses}) => {
 
 	const NewPlayerEventFilter = contract.filters.NewPlayer();
 
@@ -30,9 +30,9 @@ export const createEventListeners = ({ navigate, contract, provider, walletAddre
   AddNewEvent(BattleCreateEventFilter, provider, ({ args }) => {
     console.log(`New battle "${args.battleName}" created!`, args);
 
-    // if (walletAddress.toLowerCase() === args.player1.toLowerCase() || walletAddress.toLowerCase() === args.player2.toLowerCase()) {
-    //   navigate(`/battle/${args.battleName}`);
-    // }
+    if (walletAddress.toLowerCase() === args.player2.toLowerCase()) {
+      navigate(`/join-battle`);
+    }
 
     setUpdateGameData((updateGameData) => updateGameData + 1);
   });
@@ -46,7 +46,6 @@ export const createEventListeners = ({ navigate, contract, provider, walletAddre
       navigate(`/battle/${args.battleName}`);
     }
     setMaskedWord(args._maskedWord);
-    guesses.push(args._maskedWord[0]);  //Add the first letter in the guesses
     console.log('BattleBegin:', args._maskedWord);
 
     setUpdateGameData((updateGameData) => updateGameData + 1);
@@ -68,41 +67,29 @@ export const createEventListeners = ({ navigate, contract, provider, walletAddre
   const BattleLetterEventFilter = contract.filters.BattleLetter();
 
   AddNewEvent(BattleLetterEventFilter, provider, ({ args }) => {
-    //console.log('New letter guesses!', args._findNewLetter, args._maskedWord, args._letter );
-    setMaskedWord(args._maskedWord);
+    console.log('(BattleLetterEventFilter),_findNewLetter:', args._findNewLetter, ', _maskedWord:', args._maskedWord, ', _guesses:', args._guesses );
+    //spacing the letter
+    let guessString = String("");
+    for (let j = 0; j < args._maskedWord.length; j++) {
+        guessString = guessString + ' ' + args._maskedWord[j];
+    }
+    setMaskedWord(guessString);
+    setGuesses(args._guesses);
 
- 		// Update the guesses state variable
-    guesses.push(args._letter);
-		//setGuesses(guesses => [...guesses, args._letter]); //ne marche pas
-		//console.log(guesses);
-
-		console.log(`BattleLetterEventFilter (${args._letter}):`, args._findNewLetter, incorrectGuesses);
-    if (args._findNewLetter == false){
+    if (args._findNewLetter == false) {
       setIncorrectGuesses(incorrectGuesses = incorrectGuesses + 1);
     }
+    console.log('(BattleLetterEventFilter), guessString:', guessString, ', incorrectGuesses:', incorrectGuesses);
     setUpdateGameData((updateGameData) => updateGameData + 1);
   });
 
   const RoundEndedEventFilter = contract.filters.RoundEnded();
 
   AddNewEvent(RoundEndedEventFilter, provider, ({ args }) => {
-    console.log('Round ended!', args, walletAddress); //The game is over
-
     if (args._wordIsFind == true) {
+      console.log('Round ended! : GameOver', args); //The game is over
       setGameOver(true);
     }
-
-    // for (let i = 0; i < args.damagedPlayers.length; i += 1) {
-    //   if (args.damagedPlayers[i] !== emptyAccount) {
-    //     if (args.damagedPlayers[i] === walletAddress) {
-    //       sparcle(getCoords(player1Ref));
-    //     } else if (args.damagedPlayers[i] !== walletAddress) {
-    //       sparcle(getCoords(player2Ref));
-    //     }
-    //   } else {
-    //     playAudio(defenseSound);
-    //   }
-    // }
 
     setUpdateGameData((updateGameData) => updateGameData + 1);
   });
@@ -119,7 +106,7 @@ export const createEventListeners = ({ navigate, contract, provider, walletAddre
       setShowAlert({ status: true, type: 'failure', message: 'You lost!' });
     }
 
-    navigate('/create-battle');
+    navigate('/');
     setUpdateGameData((updateGameData) => updateGameData + 1);
   });
 
@@ -129,4 +116,13 @@ export const createEventListeners = ({ navigate, contract, provider, walletAddre
   AddNewEvent(WordAddEventFilter, provider, ({ args }) => {
       setShowAlert({ status: true, type: 'success', message: 'The word is add to the list' });
   });
+
+  const LetterSpacing = (_maskedWord) => {
+    let guessString = String("");
+    for (let j = 0; j < _maskedWord.length; j++) {
+        guessString = guessString + ' ' + _maskedWord[j];
+    }
+    console.log('BattleLetterEventFilter',_maskedWord, guessString);
+    return guessString;
+  };
 }
