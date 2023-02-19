@@ -20,6 +20,7 @@ const Battle = () => {
 	const [maskedWord, setMaskedWord] = useState("");
 	const [guesses, setGuesses] = useState("");
 	const [incorrectGuesses, setIncorrectGuesses] = useState(0);
+	const [gameOver, setGameOver] = useState(false);
 
 	// Set up state variables using the useState hook
 	let alphabet = 'abcdefghijklmnopqrstuvwxyz';
