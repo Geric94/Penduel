@@ -169,7 +169,7 @@ contract Penduel is ERC1155, Ownable, ERC1155Supply {
   event BattleEnded(string battleName, address indexed winner, address indexed loser);
   event BattleLetter(bool indexed _findNewLetter, string _maskedWord);
   event NewGameToken(address indexed owner, uint256 id, uint256 attackStrength, uint256 defenseStrength);
-  event RoundEnded(bool _wordIsFind);
+  event RoundEnded();
   event WordAdded(string wordToAdd);
 
   /// @dev Initializes the contract by setting a `metadataURI` to the token collection
@@ -425,10 +425,10 @@ contract Penduel is ERC1155, Ownable, ERC1155Supply {
 
     _wordIsFind = tryWordToGuess(bytes(wordToGuess), _battle.maskedWord);
 
-    emit RoundEnded(_wordIsFind);
-
     if (_wordIsFind)
       _endBattle(_battle.activePlayer, _battle);
+
+    emit RoundEnded();
   }
 
   function quitBattle(string memory _battleName) public {
