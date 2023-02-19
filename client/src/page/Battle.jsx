@@ -4,9 +4,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import styles from '../styles';
 import { Alert, Card, GameInfo, PlayerInfo, PendingPlayer } from '../components';
 import { useGlobalContext } from '../context';
-import { penduel, AlyraRedIcon, AlyraGreenIcon } from '../assets';
-//import { attack, attackSound, defense, defenseSound, } from '../assets';
-// import { playAudio } from '../utils/animation.js';
+import { AlyraRedIcon, AlyraGreenIcon } from '../assets';
 import man from '../assets/man.png';
 
 const manImg = man;
