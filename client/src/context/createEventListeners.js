@@ -12,7 +12,7 @@ const AddNewEvent = (eventFilter, provider, cb) => {
 	});
 };
 
-export const createEventListeners = ({ navigate, contract, provider, walletAddress, setShowAlert, setUpdateGameData, setGameOver}) => {
+export const createEventListeners = ({ navigate, contract, provider, walletAddress, setShowAlert, setUpdateGameData}) => {
 
 	const NewPlayerEventFilter = contract.filters.NewPlayer();
 
@@ -68,10 +68,6 @@ export const createEventListeners = ({ navigate, contract, provider, walletAddre
   const RoundEndedEventFilter = contract.filters.RoundEnded();
 
   AddNewEvent(RoundEndedEventFilter, provider, ({ args }) => {
-    if (args._wordIsFind == true) {
-      console.log('Round ended! : GameOver', args); //The game is over
-      setGameOver(true);
-    }
 
     setUpdateGameData((updateGameData) => updateGameData + 1);
   });

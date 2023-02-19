@@ -18,7 +18,6 @@ export const GlobalContextProvider = ({ children }) => {
 	const [errorMessage, setErrorMessage] = useState('');
   const [updateGameData, setUpdateGameData] = useState(0);
 	const [battleGround, setBattleGround] = useState('bg-penduel');
-  const [gameOver, setGameOver] = useState(false);
 
   const player1Ref = useRef();
   const player2Ref = useRef();
@@ -67,7 +66,6 @@ export const GlobalContextProvider = ({ children }) => {
         player1Ref,
         player2Ref,
         setUpdateGameData,
-        gameOver, setGameOver,
      });
     }
   }, [contract]);
@@ -138,7 +136,6 @@ export const GlobalContextProvider = ({ children }) => {
         setBattleName,
         errorMessage,
         setErrorMessage,
-        gameOver, setGameOver,
     }}
     >
 			{children}

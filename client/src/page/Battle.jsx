@@ -12,7 +12,7 @@ import man from '../assets/man.png';
 const manImg = man;
 
 const Battle = () => {
-	const { contract, gameData, battleGround, setErrorMessage, showAlert, setShowAlert, gameOver, setGameOver, walletAddress } = useGlobalContext();
+	const { contract, gameData, battleGround, setErrorMessage, showAlert, setShowAlert, walletAddress } = useGlobalContext();
 	const [player2, setPlayer2] = useState({});
 	const [player1, setPlayer1] = useState({});
 	const { battleName } = useParams();
@@ -35,6 +35,7 @@ const Battle = () => {
 				}
 				let player01Address;
 				let player02Address;
+				setGameOver(gameData.activeBattle?.status);
 				if (gameOver)
 					setPendingPlayer(false);
 				else
@@ -90,7 +91,7 @@ const Battle = () => {
 		if (incorrectGuesses >= 6) {
 			console.log(`incorrectGuesses= `, incorrectGuesses);
 			setPendingPlayer(false);
-			setGameOver(true);
+			_battle.battleStatus = BattleStatus.ENDED;
 		};
 	}, [incorrectGuesses]);
 
