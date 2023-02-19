@@ -12,17 +12,13 @@ export const GlobalContextProvider = ({ children }) => {
 	const [walletAddress, setWalletAddress] = useState('');
 	const [contract, setContract] = useState(null);
 	const [provider, setProvider] = useState(null);
-//  const [gameData, setGameData] = useState({ players: [], pendingBattles: [], activeBattle: null, currentLetter: null, maskedWord: "" });
-  const [gameData, setGameData] = useState({ pendingBattles: [], activeBattle: null, maskedWord: "" });
+  const [gameData, setGameData] = useState({ pendingBattles: [], activeBattle: null});
 	const [showAlert, setShowAlert] = useState({ status: false, type: "info", message: '' });
 	const [battleName, setBattleName] = useState('');
 	const [errorMessage, setErrorMessage] = useState('');
   const [updateGameData, setUpdateGameData] = useState(0);
 	const [battleGround, setBattleGround] = useState('bg-penduel');
-	const [maskedWord, setMaskedWord] = useState('');
-	const [incorrectGuesses, setIncorrectGuesses] = useState(0);
   const [gameOver, setGameOver] = useState(false);
-  const [guesses, setGuesses] = useState([]);
 
   const player1Ref = useRef();
   const player2Ref = useRef();
@@ -71,10 +67,7 @@ export const GlobalContextProvider = ({ children }) => {
         player1Ref,
         player2Ref,
         setUpdateGameData,
-        maskedWord, setMaskedWord,
-        incorrectGuesses, setIncorrectGuesses,
         gameOver, setGameOver,
-        guesses, setGuesses,
      });
     }
   }, [contract]);
@@ -145,10 +138,7 @@ export const GlobalContextProvider = ({ children }) => {
         setBattleName,
         errorMessage,
         setErrorMessage,
-        maskedWord, setMaskedWord,
-        incorrectGuesses, setIncorrectGuesses,
         gameOver, setGameOver,
-        guesses, setGuesses,
     }}
     >
 			{children}

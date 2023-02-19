@@ -60,10 +60,10 @@ contract Penduel is ERC1155, Ownable, ERC1155Supply {
     string name; /// @param name battle name; set by player who creates battle
     address[2] players; /// @param players address array representing players in this battle
     address activePlayer; /// @param activePlayer uint array representing active players
-    //uint8[2] moves; /// @param moves uint array representing players' move
     address winner; /// @param winner winner address
     bytes maskedWord; /// @param maskedWord word to find
     string guesses; /// @param guesses list of letter tested
+    uint8 incorrectGuess;
   }
 
   string[] wordsToGuess = [
@@ -167,7 +167,7 @@ contract Penduel is ERC1155, Ownable, ERC1155Supply {
   event BattleCreate(string battleName, address indexed player1, address indexed player2);
   event BattleBegin(string battleName, address indexed player1, address indexed player2, string _maskedWord);
   event BattleEnded(string battleName, address indexed winner, address indexed loser);
-  event BattleLetter(bool indexed _findNewLetter, string _maskedWord, string _guesses);
+  event BattleLetter(bool indexed _findNewLetter, string _maskedWord, string _guesses, uint8 _incorrectGuess);
   event NewGameToken(address indexed owner, uint256 id, uint256 attackStrength, uint256 defenseStrength);
   event RoundEnded(bool _wordIsFind);
   event WordAdded(string wordToAdd);
@@ -187,7 +187,7 @@ contract Penduel is ERC1155, Ownable, ERC1155Supply {
   function initialize() private {
     gameTokens.push(GameToken("", 0, 0, 0));
     players.push(Player(address(0), "", 0, 0, false));
-    battles.push(Battle(BattleStatus.PENDING, bytes32(0), "", [address(0), address(0)], address(0), address(0), "", string("")));
+    battles.push(Battle(BattleStatus.PENDING, bytes32(0), "", [address(0), address(0)], address(0), address(0), "", string(""), 0));
     //VRFPenduel(_vrf).requestRandomWords();
   }
 
@@ -286,7 +286,8 @@ contract Penduel is ERC1155, Ownable, ERC1155Supply {
       msg.sender, // address of active player
       address(0), // winner address; empty until battle ends
       bytes(""), //empty string
-      string("")
+      string(""),
+      0
     );
 
     uint256 _id = battles.length;
@@ -337,6 +338,11 @@ contract Penduel is ERC1155, Ownable, ERC1155Supply {
     return (_battle.activePlayer);
   }
 
+  function getNumberOfIncorrectGuess(string memory _battleName) public view returns (uint8) {
+    Battle memory _battle = getBattle(_battleName);
+    return (_battle.incorrectGuess);
+  }
+
   function _switchActivePlayer(string memory _battleName) internal view returns (address) {
     Battle memory _battle = getBattle(_battleName);
     if (_battle.players[0] == getActivePlayer(_battleName))
@@ -355,6 +361,7 @@ contract Penduel is ERC1155, Ownable, ERC1155Supply {
     require( _battle.battleStatus != BattleStatus.ENDED, "chosenLetter: Battle has already ended" ); // Require that battle has not ended
     require( msg.sender == _battle.players[0] || msg.sender == _battle.players[1], "You are not in this battle" ); // Require that player is in the battle
     require( msg.sender ==  getActivePlayer(_battleName), "It is not your turn" );
+    require( _battle.incorrectGuess <= 6, "Too bad choice" );
 
     //console.log('ActivePlayer',  getActivePlayer(_battleName));
     //EGA require(_battle.letters[_battle.players[0] == msg.sender ? 0 : 1] == 0, "You have already chosen this letter");
@@ -379,7 +386,7 @@ contract Penduel is ERC1155, Ownable, ERC1155Supply {
       } else {
         console.log("error: !_findNewLetter");
       }
-
+      _battle.incorrectGuess += 1;
       _battle.activePlayer = _switchActivePlayer(_battleName);
     }
     string memory letter = string(abi.encodePacked(_letter));
@@ -387,7 +394,7 @@ contract Penduel is ERC1155, Ownable, ERC1155Supply {
 
     updateBattle(_battleName, _battle);
 
-    emit BattleLetter(_findNewLetter, getMaskedWord(_battleName), _battle.guesses);
+    emit BattleLetter(_findNewLetter, getMaskedWord(_battleName), _battle.guesses, _battle.incorrectGuess);
 
     if (_findNewLetter) {
       _awaitBattleResults(_battleName);

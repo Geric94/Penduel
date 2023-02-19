@@ -12,14 +12,15 @@ import man from '../assets/man.png';
 const manImg = man;
 
 const Battle = () => {
-	const { contract, gameData, battleGround, setErrorMessage, showAlert, setShowAlert, player1Ref, player2Ref, 
-		maskedWord, setMaskedWord, incorrectGuesses, gameOver, setGameOver, walletAddress, guesses } = useGlobalContext();
+	const { contract, gameData, battleGround, setErrorMessage, showAlert, setShowAlert, gameOver, setGameOver, walletAddress } = useGlobalContext();
 	const [player2, setPlayer2] = useState({});
 	const [player1, setPlayer1] = useState({});
 	const { battleName } = useParams();
 	const navigate = useNavigate();
 	const [currentLetter, setCurrentLetter] = useState('');
 	const [pendingPlayer, setPendingPlayer] = useState(false);
+	const [maskedWord, setMaskedWord] = useState("");
+	const [incorrectGuesses, setIncorrectGuesses] = useState(0);
 
 	// Set up state variables using the useState hook
 	let alphabet = 'abcdefghijklmnopqrstuvwxyz';
@@ -46,8 +47,9 @@ const Battle = () => {
 				}
 				else
 					console.log(`getPlayerInfo: error access gameData, activeBattle is`, gameData.activeBattle)
-				let _string = await contract.getMaskedWord(battleName);
+				let _string = await contract?.getMaskedWord(battleName);
 				setMaskedWord(_string);
+				setIncorrectGuesses(await contract?.getNumberOfIncorrectGuess(battleName));
 				//console.log('getPlayerInfo:maskedWord=', maskedWord);
 				if (player01Address!=0x0) {
 					const p1TokenData = await contract.getPlayerToken(player01Address);
@@ -79,12 +81,12 @@ const Battle = () => {
 	
 		
 	// Use the useEffect hook to listen for updates to the guesses state variable
-	useEffect(() => {
+	useEffect(() => { //EGA remonter en haut
 		// Check if the player has won or lost the game
 		document.documentElement.style.setProperty('--mann-pos', (incorrectGuesses*-75) +"px");
 
 		if (incorrectGuesses >= 6) {
-			console.log(`incorrectGuesses= ${incorrectGuesses}`);
+			console.log(`incorrectGuesses= `, incorrectGuesses);
 			setPendingPlayer(false);
 			setGameOver(true);
 		};
@@ -107,7 +109,7 @@ const Battle = () => {
 			navigate('/');
 			return; // Do nothing more if the game is already over
 		}
-		if (guesses.includes(_letter1) == true) {
+		if (gameData?.activeBattle?.guesses.includes(_letter1) == true) {
 			setShowAlert({ status: true, type: 'failure', message: `This letter ${_letter1} has already been played`, });
 			return; // Do nothing if the letter has already been guessed
 		} else {
@@ -146,7 +148,7 @@ const Battle = () => {
 	}
 
 	const Checked = (_letter) => {
-		if (guesses.includes(_letter))
+		if (gameData?.activeBattle?.guesses.includes(_letter))
 			return `${styles.guessChecked}`;
 		else
 			return `${styles.guess}`;
@@ -157,7 +159,7 @@ const Battle = () => {
  		{showAlert?.status && <Alert type={showAlert.type} message={showAlert.message} />}
 		<div className={styles.hocContainer}>
 
-		{/* {pendingPlayer && <PendingPlayer />} */}
+		{pendingPlayer && <PendingPlayer />}
 
 		{/* <div className={`${styles.flexBetween} ${styles.gameContainer} ${battleGround}`}> */}
 		{/* <div className="flex flex-col mb-5"> */}
