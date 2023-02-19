@@ -20,6 +20,7 @@ const Battle = () => {
 	const [currentLetter, setCurrentLetter] = useState('');
 	const [pendingPlayer, setPendingPlayer] = useState(false);
 	const [maskedWord, setMaskedWord] = useState("");
+	const [guesses, setGuesses] = useState("");
 	const [incorrectGuesses, setIncorrectGuesses] = useState(0);
 
 	// Set up state variables using the useState hook
@@ -49,6 +50,7 @@ const Battle = () => {
 					console.log(`getPlayerInfo: error access gameData, activeBattle is`, gameData.activeBattle)
 				let _string = await contract?.getMaskedWord(battleName);
 				setMaskedWord(_string);
+				setGuesses(await contract?.getGuesses(battleName));
 				setIncorrectGuesses(await contract?.getNumberOfIncorrectGuess(battleName));
 				//console.log('getPlayerInfo:maskedWord=', maskedWord);
 				if (player01Address!=0x0) {
@@ -109,7 +111,7 @@ const Battle = () => {
 			navigate('/');
 			return; // Do nothing more if the game is already over
 		}
-		if (gameData?.activeBattle?.guesses.includes(_letter1) == true) {
+		if (guesses.includes(_letter1) == true) {
 			setShowAlert({ status: true, type: 'failure', message: `This letter ${_letter1} has already been played`, });
 			return; // Do nothing if the letter has already been guessed
 		} else {
@@ -148,7 +150,7 @@ const Battle = () => {
 	}
 
 	const Checked = (_letter) => {
-		if (gameData?.activeBattle?.guesses.includes(_letter))
+		if (guesses.includes(_letter))
 			return `${styles.guessChecked}`;
 		else
 			return `${styles.guess}`;

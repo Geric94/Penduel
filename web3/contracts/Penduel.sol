@@ -167,7 +167,7 @@ contract Penduel is ERC1155, Ownable, ERC1155Supply {
   event BattleCreate(string battleName, address indexed player1, address indexed player2);
   event BattleBegin(string battleName, address indexed player1, address indexed player2, string _maskedWord);
   event BattleEnded(string battleName, address indexed winner, address indexed loser);
-  event BattleLetter(bool indexed _findNewLetter, string _maskedWord, string _guesses, uint8 _incorrectGuess);
+  event BattleLetter(bool indexed _findNewLetter, string _maskedWord);
   event NewGameToken(address indexed owner, uint256 id, uint256 attackStrength, uint256 defenseStrength);
   event RoundEnded(bool _wordIsFind);
   event WordAdded(string wordToAdd);
@@ -394,7 +394,7 @@ contract Penduel is ERC1155, Ownable, ERC1155Supply {
 
     updateBattle(_battleName, _battle);
 
-    emit BattleLetter(_findNewLetter, getMaskedWord(_battleName), _battle.guesses, _battle.incorrectGuess);
+    emit BattleLetter(_findNewLetter, getMaskedWord(_battleName));
 
     if (_findNewLetter) {
       _awaitBattleResults(_battleName);
