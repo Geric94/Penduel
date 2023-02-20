@@ -7,14 +7,15 @@ import { alertIcon, gameRules } from '../assets';
 import styles from '../styles';
 
 const GameInfo = () => {
-  const { contract, battleName, setErrorMessage, setShowAlert } = useGlobalContext();
+  const { contract, gameData, setErrorMessage, setShowAlert } = useGlobalContext();
   const [toggleSidebar, setToggleSidebar] = useState(false);
   const navigate = useNavigate();
 
   const handleBattleExit = async () => {
-    //const battleName = gameData.activeBattle.name;
+    const battleName = gameData.activeBattle.name;
 
     try {
+      console.log(battleName);
       setShowAlert({ status: true, type: 'info', message: `You're quitting the ${battleName}` });
 
       await contract.quitBattle(battleName);

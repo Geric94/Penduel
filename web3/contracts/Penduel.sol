@@ -138,7 +138,7 @@ contract Penduel is ERC1155, Ownable, ERC1155Supply {
   }
 
   function getBattle(string memory _battleName) public view returns (Battle memory) {
-    require(isBattle(_battleName), "Battle doesn't exist!");
+    require(isBattle(_battleName), "(getBattle): Battle doesn't exist!");
     return battles[battleIndex[_battleName]];
   }
 
@@ -148,17 +148,17 @@ contract Penduel is ERC1155, Ownable, ERC1155Supply {
 
   //update new data in the Battle map
   function updateBattle(string memory _battleName, Battle memory _newBattle) private {
-    require(isBattle(_battleName), "Battle doesn't exist");
+    require(isBattle(_battleName), "(updateBattle): Battle doesn't exist");
     battles[battleIndex[_battleName]] = _newBattle;
   }
 
   function getMaskedWord(string memory _battleName) public view returns (string memory) {
-    require(isBattle(_battleName), "Battle doesn't exist!");
+    require(isBattle(_battleName), "(getMaskedWord): Battle doesn't exist!");
     return string(battles[battleIndex[_battleName]].maskedWord);
   }
 
   function getGuesses(string memory _battleName) public view returns (string memory _guesses) {
-    require(isBattle(_battleName), "Battle doesn't exist!");
+    require(isBattle(_battleName), "(getGuesses): Battle doesn't exist!");
     return string(battles[battleIndex[_battleName]].guesses);
   }
 
@@ -396,9 +396,10 @@ contract Penduel is ERC1155, Ownable, ERC1155Supply {
 
     emit BattleLetter(_findNewLetter, getMaskedWord(_battleName));
 
-    if (_findNewLetter) {
+    if (_findNewLetter)
       _awaitBattleResults(_battleName);
-    }
+    else if (_battle.incorrectGuess >=6)
+      _endBattle(_battle.activePlayer, _battle);
   }
 
   // Awaits battle results

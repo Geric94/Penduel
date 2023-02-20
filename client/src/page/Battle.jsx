@@ -90,7 +90,6 @@ const Battle = () => {
 		if (incorrectGuesses >= 6) {
 			console.log(`incorrectGuesses= `, incorrectGuesses);
 			setPendingPlayer(false);
-			_battle.battleStatus = BattleStatus.ENDED;
 		};
 	}, [incorrectGuesses]);
 
