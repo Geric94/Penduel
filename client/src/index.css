@@ -23,6 +23,18 @@
   margin-right: 12px;
 }
 
+.eth-card {
+  background-color:hsla(304,25%,49%,1);
+  background-image:
+  radial-gradient(at 98% 2%, hsla(19,76%,86%,1) 0px, transparent 50%),
+  radial-gradient(at 85% 4%, hsla(19,79%,81%,1) 0px, transparent 50%),
+  radial-gradient(at 75% 23%, hsla(21,100%,76%,1) 0px, transparent 50%),
+  radial-gradient(at 94% 46%, hsla(17,87%,62%,1) 0px, transparent 50%),
+  radial-gradient(at 87% 90%, hsla(342,70%,30%,1) 0px, transparent 50%),
+  radial-gradient(at 6% 93%, hsla(304,36%,14%,1) 0px, transparent 50%),
+  radial-gradient(at 31% 91%, hsla(327,75%,17%,1) 0px, transparent 50%);
+}
+
 .mann_in{
 	float: left;
 	width: 75px;
