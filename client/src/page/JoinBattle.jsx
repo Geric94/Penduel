@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import { useGlobalContext } from '../context';
-import { CustomButton, PageHOC } from '../components';
+import { CustomButton, CustomInput, PageHOC } from '../components';
 import styles from '../styles';
 
 const JoinBattle = () => {
@@ -35,11 +35,12 @@ const JoinBattle = () => {
 					? gameData.pendingBattles
 						.filter((battle) => !battle.players.includes(walletAddress) && battle.battleStatus !== 1)
 						.map((battle, index) => (
-							<div key={battle.name + index} className={styles.flexBetween}>
+							<div key={battle.name + index} className={`flex flex-row items-center mb-5`}>
 								<p className={styles.joinBattleTitle}>{index + 1}. {battle.name}</p>
+								{battle.betValue}
 								<CustomButton
 									title="Join"
-								  handleClick={() => handleClick(battle.name)}
+									handleClick={() => handleClick(battle.name)}
 								/>
 							</div>
 						)) 

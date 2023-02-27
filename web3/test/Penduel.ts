@@ -64,7 +64,7 @@ context("Penduel", () => {
         // on vérifie toutes les variables/constantes de notre contrat
         it(`${counter++}: admin must be equal to owner`, async function () {
             const { vrf, owner } = await loadFixture(deployVRF);
-            const admin = await vrf.s_owner(); // { gasLimit: 5200000 }
+            const admin = await vrf.owner(); // { gasLimit: 5200000 }
             expect(admin).to.be.equal(owner.address, `admin is not owner`);
         });
         it("Should receive and store the funds to penduel", async function () {

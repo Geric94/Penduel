@@ -7,8 +7,9 @@ import { CustomButton, CustomInput, GameLoad, PageHOC } from '../components';
 //import { walletconnect } from 'web3modal/dist/providers/connectors';
 
 const CreateBattle = () => {
-  const { contract, walletAddress, gameData, battleName, setBattleName, setErrorMessage } = useGlobalContext();
+  const { contract, gameData, battleName, setBattleName, setErrorMessage } = useGlobalContext();
   const [waitBattle, setWaitBattle] = useState(false);
+  const [betValue, setBetValue] = useState();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -23,8 +24,9 @@ const CreateBattle = () => {
     if (battleName === '' || battleName.trim() === '') return null;
 
     try {
-       await contract.createBattle(battleName);
-       setWaitBattle(true);
+      await contract.createBattle(battleName);
+      //.send({ from: gameData.activeBattle.player , value: gameData.activeBattle.bet });
+      setWaitBattle(true);
     } catch (error) {
       setErrorMessage(error);
       navigate('/');
@@ -35,18 +37,25 @@ const CreateBattle = () => {
     <>
       {waitBattle && <GameLoad />}
 
-      <div className="flex flex-col mb-5">
+      <div className="flex flex-row items-center mb-5">
         <CustomInput
           label="Battle"
           placeHolder="Enter battle name"
           value={battleName}
           handleValueChange={setBattleName}
+          restStyles="ml-6 mr-6"
         />
-
+        <CustomInput
+          // label="Bet"
+          type='number'
+          placeHolder="Bet (Wei)"
+          value={betValue}
+          handleValueChange={setBetValue}
+          restStyles="ml-2 mr-2 w-20"
+        />
         <CustomButton
           title="Create Battle"
           handleClick={handleClick}
-          restStyles="mt-6"
         />
       </div>
       <p className={styles.infoText} onClick={() => navigate('/join-battle')}>
