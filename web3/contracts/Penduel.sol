@@ -105,13 +105,13 @@ contract Penduel is ERC1155, Ownable, ERC1155Supply {
   ];
   string private wordToGuess;
 
-  mapping(address => uint256) public playerIndex; // Mapping of player addresses to player index in the players array
-  mapping(address => uint256) public playerTokenIndex; // Mapping of player addresses to player token index in the gameTokens array
-  mapping(string => uint256) public battleIndex; // Mapping of battle name to battle index in the battles array
+  mapping(address => uint256) private playerIndex; // Mapping of player addresses to player index in the players array
+  mapping(address => uint256) private playerTokenIndex; // Mapping of player addresses to player token index in the gameTokens array
+  mapping(string => uint256) private battleIndex; // Mapping of battle name to battle index in the battles array
 
-  Player[] public players; // Array of players
-  GameToken[] public gameTokens; // Array of game tokens
-  Battle[] public battles; // Array of battles
+  Player[] private players; // Array of players
+  GameToken[] private gameTokens; // Array of game tokens
+  Battle[] private battles; // Array of battles
 
   //Player
   function isPlayer(address playerAddress) public view returns (bool) {
@@ -335,11 +335,15 @@ contract Penduel is ERC1155, Ownable, ERC1155Supply {
     _battle.battleStatus = BattleStatus.STARTED;
     _battle.players[1] = payable(msg.sender);
     _battle.activePlayer = _battle.players[0];
+    
+    ////////////////////Change for testing //////////////////////////////
     //word To Guess
-    uint256 randomWord = VRFPenduel(_VRF).getRandomValue(battleIndex[battleName]);
-    uint256 boundary = (wordsToGuess.length<32)?wordsToGuess.length:32;
-    uint256 indexRandom = (randomWord % boundary);
-    // uint256 indexRandom = battleIndex[battleName];
+    uint256 randomWord = VRFPenduel(_VRF).getRandomValue(battleIndex[battleName]);  //comment for testing
+    uint256 boundary = (wordsToGuess.length<32)?wordsToGuess.length:32;  //comment for testing
+    uint256 indexRandom = (randomWord % boundary);  //comment for testing
+    //uint256 indexRandom = battleIndex[battleName];  //uncomment for testing
+    ////////////////////Change for testing //////////////////////////////
+
     // console.log('wordsToGuess' , wordsToGuess[indexRandom]);
     wordToGuess = wordsToGuess[indexRandom];
     _battle.maskedWord = underscores(bytes(wordToGuess));
