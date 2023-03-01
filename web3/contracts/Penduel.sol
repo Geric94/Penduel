@@ -295,8 +295,9 @@ contract Penduel is ERC1155, Ownable, ERC1155Supply {
   function createBattle(string memory battleName) external payable {
     require(isPlayer(msg.sender), "Please Register Player First"); // Require that the player is registered
     require(!isBattle(battleName), "Battle already exists!"); // Require battle with same name should not exist
-    require( msg.sender.balance >= msg.value, "Error, insufficent vault balance" );
-    require( msg.value > 0, "Error, minimum 1 WEI");
+    require( msg.sender.balance >= msg.value, "createBattle: Error, insufficent vault balance");
+    require( msg.value > (0.05 * 1e12), "Error, minimum 0.05 Avax"); //EGA
+    console.log('balance: ', msg.sender.balance, ' value: ', msg.value);
 
     bytes32 battleHash = keccak256(abi.encode(battleName));
 
@@ -328,7 +329,7 @@ contract Penduel is ERC1155, Ownable, ERC1155Supply {
 
     require(_battle.players[0] != msg.sender, "Only player two can join a battle"); // Require that player 2 is joining the battle
     require(!getPlayer(msg.sender).inBattle, "Already in battle"); // Require that player is not already in a battle
-    require( msg.value >= _battle.bet, "Error, insufficent amount sent" );
+    require( msg.sender.balance >= msg.value, "joinBattle: Error, insufficent vault balance" );
     require( msg.value == _battle.bet, "Amount must be equal at bet" );
     require(_battle.battleStatus == BattleStatus.PENDING, "Battle already started!"); // Require that battle has not started
     
@@ -341,7 +342,7 @@ contract Penduel is ERC1155, Ownable, ERC1155Supply {
     uint256 randomWord = VRFPenduel(_VRF).getRandomValue(battleIndex[battleName]);  //comment for testing
     uint256 boundary = (wordsToGuess.length<32)?wordsToGuess.length:32;  //comment for testing
     uint256 indexRandom = (randomWord % boundary);  //comment for testing
-    //uint256 indexRandom = battleIndex[battleName];  //uncomment for testing
+    // uint256 indexRandom = battleIndex[battleName];  //uncomment for testing
     ////////////////////Change for testing //////////////////////////////
 
     // console.log('wordsToGuess' , wordsToGuess[indexRandom]);

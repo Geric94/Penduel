@@ -3,14 +3,15 @@ import { useNavigate } from 'react-router-dom';
 
 import styles from '../styles';
 import { useGlobalContext } from '../context';
-import { CustomButton, CustomInput, GameLoad, PageHOC } from '../components';
+import { CustomButton, CustomInput, GameLoad, PageHOC, AmountIn } from '../components';
+import { parseUnits } from "ethers/lib/utils";
 //import { walletconnect } from 'web3modal/dist/providers/connectors';
 
 const CreateBattle = () => {
-  const { contract, gameData, battleName, setBattleName, setErrorMessage } = useGlobalContext();
+  const { contract, gameData, battleName, setBattleName, bet, setBet, setErrorMessage } = useGlobalContext();
   const [waitBattle, setWaitBattle] = useState(false);
-  const [betValue, setBetValue] = useState();
   const navigate = useNavigate();
+  const fromValueBigNumber = parseUnits(bet); // converse the string to bigNumber
 
   useEffect(() => {
     if (gameData?.activeBattle?.battleStatus === 1) {
@@ -22,14 +23,29 @@ const CreateBattle = () => {
 
   const handleClick = async () => {
     if (battleName === '' || battleName.trim() === '') return null;
+    if (bet === '' || bet.trim() === '') return null;
 
     try {
-      await contract.createBattle(battleName);
-      //.send({ from: gameData.activeBattle.player , value: gameData.activeBattle.bet });
+      //await setBet(bet);
+      console.log(battleName, parseUnits(bet)/100);
+      await contract.createBattle(battleName, {value: parseUnits(bet)/100 });
       setWaitBattle(true);
     } catch (error) {
+      console.log(error);
+      setErrorMessage(error?error:'Error handleClick');
+      //navigate('/');
+    }
+  };
+
+  const onFromValueChange = (value) => {
+    const trimmedValue = value.trim();
+
+    try {
+      trimmedValue && value; //parseUnits(value);
+      console.log('value: ', value);
+      setBet(value);
+    } catch (e) {
       setErrorMessage(error);
-      navigate('/');
     }
   };
 
@@ -45,17 +61,16 @@ const CreateBattle = () => {
           handleValueChange={setBattleName}
           restStyles="ml-6 mr-6"
         />
-        <CustomInput
-          // label="Bet"
-          type='number'
-          placeHolder="Bet (Wei)"
-          value={betValue}
-          handleValueChange={setBetValue}
-          restStyles="ml-2 mr-2 w-20"
-        />
+        <div>
+          <AmountIn
+            value={bet}
+            onChange={onFromValueChange}
+          />
+        </div>
         <CustomButton
           title="Create Battle"
           handleClick={handleClick}
+          restStyles="ml-6 mr-6"
         />
       </div>
       <p className={styles.infoText} onClick={() => navigate('/join-battle')}>

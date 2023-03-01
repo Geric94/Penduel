@@ -7,6 +7,8 @@ import PendingPlayer from './PendingPlayer';
 import PlayerInfo from './PlayerInfo';
 import CustomInput from './CustomInput';
 import CustomButton from './CustomButton';
+import AmountIn from './AmountIn';
+import AmountOut from './AmountOut';
 //import ActionButton from './ActionButton';
 import OnboardModal from './OnboardModal';
 import AlphabetButtons from './AlphabetButtons';
@@ -21,6 +23,8 @@ export {
   PlayerInfo,
   CustomInput,
   CustomButton,
+  AmountIn,
+  AmountOut,
   //ActionButton,
   OnboardModal,
   AlphabetButtons,

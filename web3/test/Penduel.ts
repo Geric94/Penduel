@@ -1,5 +1,5 @@
 import { expect, assert } from "chai";
-import { ethers } from "hardhat";
+//import { ethers } from "hardhat";
 import { loadFixture } from "@nomicfoundation/hardhat-network-helpers";
 // import { anyValue } from "@nomicfoundation/hardhat-chai-matchers/withArgs";
 import { Penduel } from "../typechain-types";
@@ -7,6 +7,7 @@ import { VRFv2Consumer } from "../typechain-types";
 //const { ethers } = require('hardhat');
 //import hre from 'hardhat';
 import { parseEther } from 'ethers/lib/utils';
+//import { BigNumber } from "ethers";
 
 const _metadataUri = 'https://gateway.pinata.cloud/ipfs/https://gateway.pinata.cloud/ipfs/QmX2ubhtBPtYw75Wrpv6HLb1fhbJqxrnbhDo1RViW3oVoi';
 
@@ -53,7 +54,8 @@ context("Penduel", () => {
     describe("Deployment", function () {
         // on vérifie toutes les variables/constantes de notre contrat
         it(`${counter++}: admin must be equal to owner`, async function () {
-            const { penduel, owner } = await loadFixture(deployPenduelFixture);
+            const { penduel, owner, player1, player2 } = await loadFixture(deployPenduelFixture);
+            console.log('cost create contract: ', (10000*1e18 - await owner.getBalance()), 'wei');
             const admin = await penduel.owner(); // { gasLimit: 5200000 }
             expect(admin).to.be.equal(owner.address, `admin is not owner`);
         });
@@ -193,75 +195,97 @@ context("Penduel", () => {
         it(`${counter++}: getBattle with Battle`, async () => {
             const { penduel } = await loadFixture(deployPenduelFixture);
             await penduel.registerPlayer("OwnerPlayer", "OwnerToken"); //); //, { gasLimit: 500000 });
-            await penduel.createBattle("Battle1",{ value: parseEther('0.01') });
+            await penduel.createBattle("Battle1", {value: parseEther('0.0005') });
             const battleExists = await penduel.getBattle("Battle1");
             expect(battleExists.name).to.be.equal("Battle1");
         });
         //Error, minimum 1 WEI   const betSize = ether("0.00005");
 
         it(`${counter++}: createBattle already exist`, async () => {
-            const { penduel } = await loadFixture(deployPenduelFixture);
-            await penduel.registerPlayer("OwnerPlayer", "OwnerToken"); //, { gasLimit: 500000 });
-            await penduel.createBattle("Battle1",{ value: parseEther('0.01') });
-            await expect(penduel.createBattle("Battle1")).to.be.revertedWith("Battle already exists!");
+            const { penduel, player1 } = await loadFixture(deployPenduelFixture);
+            await penduel.connect(player1).registerPlayer("OwnerPlayer", "OwnerToken"); //, { gasLimit: 500000 });
+            // let penduelBalanceBefore: BigNumber = await penduel.getBalance();
+            // let player1BalanceBefore: BigNumber = await player1.getBalance();
+            await penduel.connect(player1).createBattle("Battle1", {value: parseEther('0.0005') });
+            // console.log('Create Battle Cost :');
+            // console.log('penduel: ', (await penduel.getBalance()).sub(penduelBalanceBefore));
+            // console.log('player1: ', (await player1.getBalance()).sub(player1BalanceBefore));
+            await expect(penduel.connect(player1).createBattle("Battle1")).to.be.revertedWith("Battle already exists!");
+        });
+
+        it(`${counter++}: createBattle player1 with 'Error, insufficent amount sent'`, async () => {
+            const { penduel, player1 } = await loadFixture(deployPenduelFixture);
+            await penduel.connect(player1).registerPlayer("Player1", "Player1Token"); //, { gasLimit: 500000 });
+            await expect(penduel.connect(player1).createBattle("Battle1", { value: parseEther('10001')})).to.be
+                .revertedWith("createBattle: Error, insufficent vault balance"); //, gasLimit: 500000 });
         });
 
         it(`${counter++}: joinBattle only player2 can joint battle`, async () => {
             const { penduel, player1 } = await loadFixture(deployPenduelFixture);
             await penduel.connect(player1).registerPlayer("OwnerPlayer", "OwnerToken"); //, { gasLimit: 500000 });
-            await penduel.connect(player1).createBattle("Battle1",{ value: parseEther('0.01') });
-            await expect(penduel.connect(player1).joinBattle("Battle1")).to.be.revertedWith("Only player two can join a battle");
+            await penduel.connect(player1).createBattle("Battle1", {value: parseEther('0.0005') });
+            await expect(penduel.connect(player1).joinBattle("Battle1", {value: parseEther('0.0005') })).to.be
+                .revertedWith("Only player two can join a battle");
         });
 
         it(`${counter++}: joinBattle player2 doen't exist`, async () => {
             const { penduel, player1, player2 } = await loadFixture(deployPenduelFixture);
             await penduel.connect(player1).registerPlayer("Player1", "Player1Token"); //, { gasLimit: 500000 });
-            await penduel.connect(player1).createBattle("Battle1",{ value: parseEther('0.01') });
-            await expect(penduel.connect(player2).joinBattle("Battle1")).to.be.revertedWith("Player doesn't exist!");
+            await penduel.connect(player1).createBattle("Battle1", {value: parseEther('0.0005') });
+            await expect(penduel.connect(player2).joinBattle("Battle1", {value: parseEther('0.0005') })).to.be
+                .revertedWith("Player doesn't exist!");
         });
 
-        it(`${counter++}: joinBattle player2 with 'Error, insufficent amount sent'`, async () => {
+        it(`${counter++}: joinBattle player2 with 'Error, insufficent vault balance'`, async () => {
             const { penduel, player1, player2 } = await loadFixture(deployPenduelFixture);
             await penduel.connect(player1).registerPlayer("Player1", "Player1Token"); //, { gasLimit: 500000 });
-            await penduel.connect(player1).createBattle("Battle1",{ value: 1e12 });
+            await penduel.connect(player1).createBattle("Battle1", {value: parseEther('0.0005') });
             await penduel.connect(player2).registerPlayer("Player2", "Player2Token"); //, { gasLimit: 500000 });
-            await expect(penduel.connect(player2).joinBattle("Battle1", { value: 1e12-1})).to.be.revertedWith("Error, insufficent amount sent"); //, gasLimit: 500000 });
+            await expect(penduel.connect(player2).joinBattle("Battle1", { value: parseEther('10001')})).to.be
+                .revertedWith("joinBattle: Error, insufficent vault balance"); //, gasLimit: 500000 });
         });
 
         it(`${counter++}: joinBattle player2 with 'Amount must be equal at bet'`, async () => {
             // console.log('WEI:', ethers.BigNumber.from(1e12+1).toString());
             const { penduel, player1, player2 } = await loadFixture(deployPenduelFixture);
             await penduel.connect(player1).registerPlayer("Player1", "Player1Token"); //, { gasLimit: 500000 });
-            await penduel.connect(player1).createBattle("Battle1",{ value: 1e12 });
+            await penduel.connect(player1).createBattle("Battle1", {value: parseEther('0.0005') });
             await penduel.connect(player2).registerPlayer("Player2", "Player2Token"); //, { gasLimit: 500000 });
-            await expect(penduel.connect(player2).joinBattle("Battle1", { value: 1e12+1})).to.be.revertedWith("Amount must be equal at bet"); //, gasLimit: 500000 });
+            await expect(penduel.connect(player2).joinBattle("Battle1", { value: parseEther('0.00051')})).to.be
+                .revertedWith("Amount must be equal at bet"); //, gasLimit: 500000 });
         });
 
         it(`${counter++}: joinBattle player1 already in battle`, async () => {
             const { penduel, player1, player2 } = await loadFixture(deployPenduelFixture);
             await penduel.connect(player1).registerPlayer("Player1", "Player1Token"); //, { gasLimit: 500000 });
-            await penduel.connect(player1).createBattle("Battle1",{ value: parseEther('0.01') });
+            await penduel.connect(player1).createBattle("Battle1", {value: parseEther('0.0005') });
             await penduel.connect(player2).registerPlayer("Player2", "Player2Token"); //, { gasLimit: 500000 });
-            await penduel.connect(player2).joinBattle("Battle1", { value: parseEther('0.01')}); //, gasLimit: 5000000 
-            await expect(penduel.connect(player1).joinBattle("Battle1", { value: 1e12})).to.be.revertedWith("Only player two can join a battle"); //, gasLimit: 5000000 
+            await penduel.connect(player2).joinBattle("Battle1", { value: parseEther('0.0005')}); //, gasLimit: 5000000 
+            await expect(penduel.connect(player1).joinBattle("Battle1", { value: parseEther('0.0005')})).to.be
+                .revertedWith("Only player two can join a battle"); //, gasLimit: 5000000 
         });
 
         it(`${counter++}: joinBattle player2 already in battle`, async () => {
             const { penduel, player1, player2 } = await loadFixture(deployPenduelFixture);
             await penduel.connect(player1).registerPlayer("Player1", "Player1Token"); //, { gasLimit: 500000 }
-            await penduel.connect(player1).createBattle("Battle1",{ value: parseEther('0.01') });
+            await penduel.connect(player1).createBattle("Battle1", {value: parseEther('0.0005') });
             await penduel.connect(player2).registerPlayer("Player2", "Player2Token"); //, { gasLimit: 5800000 }
-            await penduel.connect(player2).joinBattle("Battle1", { value: parseEther('0.01')}); //, gasLimit: 5800000 
-            await expect(penduel.connect(player2).joinBattle("Battle1", { value: parseEther('0.01')}))
+            // let penduelBalanceBefore: BigNumber = await penduel.getBalance();
+            // let player2BalanceBefore: BigNumber = await player2.getBalance();
+            await penduel.connect(player2).joinBattle("Battle1", { value: parseEther('0.0005')}); //, gasLimit: 5800000 
+            // console.log('Join Battle Cost :');
+            // console.log('penduel: ', (await penduel.getBalance()).sub(penduelBalanceBefore));
+            // console.log('player2: ', (await player2.getBalance()).sub(player2BalanceBefore));
+            await expect(penduel.connect(player2).joinBattle("Battle1", { value: parseEther('0.0005')}))
                 .to.be.revertedWith("Already in battle"); //, gasLimit: 5800000 
         });
 
         it(`${counter++}: chosenLetter: letter not in the guess`, async () => {
             const { penduel, player1, player2 } = await loadFixture(deployPenduelFixture);
             await penduel.connect(player1).registerPlayer("Player1", "Player1Token"); //, { gasLimit: 500000 });
-            await penduel.connect(player1).createBattle("Battle1",{ value: parseEther('0.01') });
+            await penduel.connect(player1).createBattle("Battle1", {value: parseEther('0.0005') });
             await penduel.connect(player2).registerPlayer("Player2", "Player2Token"); //, { gasLimit: 500000 });
-            await penduel.connect(player2).joinBattle("Battle1", { value: parseEther('0.01') });
+            await penduel.connect(player2).joinBattle("Battle1", { value: parseEther('0.0005') });
             await penduel.connect(player1).chosenLetter(new TextEncoder().encode('a'), "Battle1"); //, { gasLimit: 200000 }
             expect((await penduel.getBattle("Battle1")).maskedWord).to.be.equal('0x675f5f5f5f5f5f'); //  'g______'
         });
@@ -269,9 +293,9 @@ context("Penduel", () => {
         it(`${counter++}: chosenLetter: letter in the guess`, async () => {
             const { penduel, player1, player2 } = await loadFixture(deployPenduelFixture);
             await penduel.connect(player1).registerPlayer("Player1", "Player1Token"); //, { gasLimit: 500000 });
-            await penduel.connect(player1).createBattle("Battle1",{ value: parseEther('0.01') });
+            await penduel.connect(player1).createBattle("Battle1", {value: parseEther('0.0005') });
             await penduel.connect(player2).registerPlayer("Player2", "Player2Token"); //, { gasLimit: 500000 });
-            await penduel.connect(player2).joinBattle("Battle1", { value: parseEther('0.01') });
+            await penduel.connect(player2).joinBattle("Battle1", { value: parseEther('0.0005') });
             await penduel.connect(player1).chosenLetter(new TextEncoder().encode('y'), "Battle1"); //, { gasLimit: 200000 }
             expect((await penduel.getBattle("Battle1")).maskedWord).to.be.equal('0x675f5f5f5f795f'); //  'g____y_'
         });
@@ -279,18 +303,18 @@ context("Penduel", () => {
         it(`${counter++}: chosenLetter: It is not your turn`, async () => {
             const { penduel, player1, player2 } = await loadFixture(deployPenduelFixture);
             await penduel.connect(player1).registerPlayer("Player1", "Player1Token"); //, { gasLimit: 500000 });
-            await penduel.connect(player1).createBattle("Battle1",{ value: parseEther('0.01') });
+            await penduel.connect(player1).createBattle("Battle1", {value: parseEther('0.0005') });
             await penduel.connect(player2).registerPlayer("Player2", "Player2Token"); //, { gasLimit: 500000 });
-            await penduel.connect(player2).joinBattle("Battle1", { value: parseEther('0.01') });
+            await penduel.connect(player2).joinBattle("Battle1", { value: parseEther('0.0005') });
             await expect(penduel.connect(player2).chosenLetter(new TextEncoder().encode('o'), "Battle1")).to.be.revertedWith("It is not your turn");
         });
 
         it(`${counter++}: chosenLetter: bad letter and try an over`, async () => {
             const { penduel, player1, player2 } = await loadFixture(deployPenduelFixture);
             await penduel.connect(player1).registerPlayer("Player1", "Player1Token"); //, { gasLimit: 500000 });
-            await penduel.connect(player1).createBattle("Battle1",{ value: parseEther('0.01') });
+            await penduel.connect(player1).createBattle("Battle1", {value: parseEther('0.0005') });
             await penduel.connect(player2).registerPlayer("Player2", "Player2Token"); //, { gasLimit: 500000 });
-            await penduel.connect(player2).joinBattle("Battle1", { value: parseEther('0.01') });
+            await penduel.connect(player2).joinBattle("Battle1", { value: parseEther('0.0005') });
             await penduel.connect(player1).chosenLetter(new TextEncoder().encode('a'), "Battle1"); //, { gasLimit: 200000 }
             await expect(penduel.connect(player1).chosenLetter(new TextEncoder().encode('b'), "Battle1")).to.be.revertedWith("It is not your turn");
         });
@@ -298,9 +322,9 @@ context("Penduel", () => {
         it(`${counter++}: chosenLetter: Play a letter already playing`, async () => {
             const { penduel, player1, player2 } = await loadFixture(deployPenduelFixture);
             await penduel.connect(player1).registerPlayer("Player1", "Player1Token"); //, { gasLimit: 500000 });
-            await penduel.connect(player1).createBattle("Battle1",{ value: parseEther('0.01') });
+            await penduel.connect(player1).createBattle("Battle1", {value: parseEther('0.0005') });
             await penduel.connect(player2).registerPlayer("Player2", "Player2Token"); //, { gasLimit: 500000 });
-            await penduel.connect(player2).joinBattle("Battle1", { value: parseEther('0.01') });
+            await penduel.connect(player2).joinBattle("Battle1", { value: parseEther('0.0005') });
             await penduel.connect(player1).chosenLetter(new TextEncoder().encode('o'), "Battle1");
             await penduel.connect(player1).chosenLetter(new TextEncoder().encode('d'), "Battle1");
             await penduel.connect(player1).chosenLetter(new TextEncoder().encode('b'), "Battle1");
@@ -315,9 +339,9 @@ context("Penduel", () => {
         it(`${counter++}: chosenLetter: find the word`, async () => {
             const { penduel, player1, player2 } = await loadFixture(deployPenduelFixture);
             await penduel.connect(player1).registerPlayer("Player1", "Player1Token"); //, { gasLimit: 500000 });
-            await penduel.connect(player1).createBattle("Battle1",{ value: parseEther('0.01') });
+            await penduel.connect(player1).createBattle("Battle1", {value: parseEther('0.0005') });
             await penduel.connect(player2).registerPlayer("Player2", "Player2Token"); //, { gasLimit: 500000 });
-            await penduel.connect(player2).joinBattle("Battle1", { value: parseEther('0.01') });
+            await penduel.connect(player2).joinBattle("Battle1", { value: parseEther('0.0005') });
             await penduel.connect(player1).chosenLetter(new TextEncoder().encode('o'), "Battle1");
             await penduel.connect(player1).chosenLetter(new TextEncoder().encode('d'), "Battle1");
             await penduel.connect(player1).chosenLetter(new TextEncoder().encode('b'), "Battle1");
@@ -333,16 +357,16 @@ context("Penduel", () => {
         it(`${counter++}: createBattle getBalance`, async () => {
             const { penduel, player1 } = await loadFixture(deployPenduelFixture);
             await penduel.connect(player1).registerPlayer("Player1", "Player1Token"); //, { gasLimit: 500000 });
-            await penduel.connect(player1).createBattle("Battle1",{ value: parseEther('0.01') });
-            expect(await ethers.provider.getBalance(penduel.address)).to.equal( parseEther('0.01') );
+            await penduel.connect(player1).createBattle("Battle1", {value: parseEther('0.0005') });
+            expect(await ethers.provider.getBalance(penduel.address)).to.equal( parseEther('0.0005') );
         });
 
         it(`${counter++}: chosenLetter: find the word`, async () => {
             const { penduel, player1, player2 } = await loadFixture(deployPenduelFixture);
             await penduel.connect(player1).registerPlayer("Player1", "Player1Token"); //, { gasLimit: 500000 });
-            await penduel.connect(player1).createBattle("Battle1",{ value: parseEther('0.01') });
+            await penduel.connect(player1).createBattle("Battle1", {value: parseEther('0.0005') });
             await penduel.connect(player2).registerPlayer("Player2", "Player2Token"); //, { gasLimit: 500000 });
-            await penduel.connect(player2).joinBattle("Battle1", { value: parseEther('0.01') });
+            await penduel.connect(player2).joinBattle("Battle1", { value: parseEther('0.0005') });
             await penduel.connect(player1).chosenLetter(new TextEncoder().encode('o'), "Battle1");
             await penduel.connect(player1).chosenLetter(new TextEncoder().encode('d'), "Battle1");
             await penduel.connect(player1).chosenLetter(new TextEncoder().encode('b'), "Battle1");

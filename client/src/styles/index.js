@@ -16,8 +16,8 @@ const styles = {
 
   // join battle page
   joinHeadText: 'font-rajdhani font-semibold text-2xl text-white mb-3',
-  joinContainer: 'flex flex-col gap-3 mt-3 mb-5',
-  joinBattleTitle: 'font-rajdhani font-normal text-xl text-white',
+  joinContainer: 'flex flex-col w-20 gap-3 mt-3 mb-5',
+  joinBattleTitle: 'flex w-40 min-w-40 font-rajdhani font-normal text-xl text-white',
   joinLoading: 'font-rajdhani font-normal text-xl text-white',
 
   // battleground page
@@ -51,7 +51,6 @@ const styles = {
   cardMann_in: 'mann_in',
   cardMann: 'mann',
   
-
   // custom button component tracking-widest --tw-text-opacity --tw-bg-opacity
   btn: 'px-4 py-2 rounded-lg bg-siteViolet w-fit text-white font-rajdhani font-bold',
   letter: 'px-1 py-1 rounded-lg bg-siteViolet w-fit text-2xl font-rajdhani font-bold mt-1 ml-1 mr-1 mb-1',
@@ -60,8 +59,19 @@ const styles = {
   guessChecked: 'text-white guessChecked',
 
   // custom input component
-  label: 'font-rajdhani font-semibold text-2xl text-white mb-3',
+  label: 'font-rajdhani font-semibold text-2xl text-white',
   input: 'bg-siteDimBlack text-white outline-none focus:outline-siteViolet p-4 rounded-md sm:max-w-[50%] max-w-full',
+
+  // AmountIn & AmountOut
+  //amountContainer: "flex text-white justify-between items-center flex-row w-full min-w-20 bg-site-dim border-[1px] hover:border-site-dim2 h-10 min-h-10 sm:p-4 p-2 rounded-[20px] ml-6 mr-6",
+  //amountInput: "flex flex-1 bg-transparent outline-none font-poppins font-black text-2xl text-white",
+  // border-transparent
+  amountContainer: "flex text-white justify-between items-center flex-row w-30 min-w-10 bg-site-dim border-[1px] hover:border-site-dim2 h-10 min-h-10 sm:p-4 p-2 rounded-[20px] ml-6 mr-6",
+  amountInput: "flex w-20 bg-transparent outline-none font-poppins font-black text-2xl text-white",
+
+  currencyButton: "flex flex-row items-center bg-site-dim2 py-2 px-4 rounded-xl font-poppins font-bold text-white",
+  currencyList: "absolute z-10 right-0 bg-site-black border-[1px] border-site-dim2 w-full mt-2 rounded-lg min-w-[170px] overflow-hidden",
+  currencyListItem: "font-poppins font-medium text-base text-white hover:text-dim-white px-5 py-3 hover:bg-site-dim2 cursor-pointer",
 
   // gameload component
   gameLoadContainer: 'absolute inset-0 z-10 w-full h-screen gameload flex-col',
