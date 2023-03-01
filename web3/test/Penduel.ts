@@ -66,8 +66,8 @@ context("Penduel", () => {
             let awaitedBalanceOfOwner = ethers.BigNumber.from('0').toString();
             assert.equal(balanceOfOwner, awaitedBalanceOfOwner);
         })
-        it("Should receive and store the funds to penduel", async function () {
-            const { penduel, amount } = await loadFixture( deployPenduelFixture );
+        it(`${counter++}: Should receive and store the funds to penduel`, async function () {
+            const { penduel } = await loadFixture( deployPenduelFixture );
             expect(await ethers.provider.getBalance(penduel.address)).to.equal( 0 );
         });
         it(`${counter++}: admin must be equal to owner`, async function () {

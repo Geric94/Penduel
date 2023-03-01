@@ -5,20 +5,21 @@ import { useNavigate } from 'react-router-dom';
 
 import Alert from './Alert';
 import { useGlobalContext } from '../context';
-import {alyra, penduel } from '../assets';
+import {alyra} from '../assets';
 import styles from '../styles';
 import { SiEthereum } from "react-icons/si";
-import { CustomButton, CustomInput } from '../components';
+import Balance from './Balance';
 import { GetParams } from '../utils/onboard.js';
 
 const shortenAddress = (address) => `${address.slice(0, 6)}...${address.slice(address.length - 4)}`;
 
 const PageHOC = (Component, title, description) => () => {
-  const { showAlert, battleGround } = useGlobalContext();
+  const { owner, showAlert, battleGround } = useGlobalContext();
 	const [walletAddress, setWalletAddress] = useState('');
 	const [balance, setBalance] = useState('');
 	const [addressTo, setAddressTo] = useState('');
   const [amount, setAmount] = useState('');
+  const [balanceContract, setContractBalance] = useState('');
 
   const navigate = useNavigate();
 
@@ -51,19 +52,16 @@ const PageHOC = (Component, title, description) => () => {
             <div className="flex p-3 sm:w-66 justify-end flex-col rounded-xl w-full eth-card .white-glassmorphism ">
               <div className="flex flex-1 justify-between items-start flex-row mf:mr-10 font-bold">
                 <img src={alyra} alt="alyra" className={styles.hocLogo} onClick={() => navigate('/')} />
-                {balance?Math.round(balance * 100)/100+' AVAX':''
-                /* {!currentAccount && (
-                  <CustomButton
-                    circle="true"
-                    title="Connect Wallet"
-                    restStyles="flex flex-row items-center"
-                    handleClick={() => connectWallet}
-                  />
-                )} */}
+                { balance?Math.round(balance * 100)/100 + ' AVAX':''}
               </div>
               <div className="flex p-1 justify-between flex-row w-full h-full">
-                <div className="flex w-10 h-10 rounded-full border-2 border-white justify-center items-center">
-                  <SiEthereum fontSize={21} color="#fff" />
+                <div className="flex w-10 h-10 rounded-full justify-between flex-row border-2 border-white items-center">
+                  <div className="flex p-2 font-bold text-xl">
+                    <SiEthereum fontSize={21} color="#fff" />
+                  </div>
+                  <div className="flex p-2 font-bold text-xl">
+                    {owner?balance:''}
+                  </div>
                 </div>
                 <div className="flex p-2 font-bold text-xl items-center">
                   {shortenAddress(walletAddress)}
@@ -71,37 +69,6 @@ const PageHOC = (Component, title, description) => () => {
               </div>
             </div>
             <div className="flex p-5 sm:w-66 flex-row w-full justify-start items-center blue-glassmorphism">
-              {/* <CustomInput
-                // label="addressTo"
-                placeHolder="Address To"
-                value={addressTo}
-                handleValueChange={setAddressTo}
-                restStyles="ml-2 mr-2"
-              />
-              <CustomInput
-                // label="amount"
-                type='number'
-                placeHolder="Amount (ETH)"
-                value={amount}
-                handleValueChange={setAmount}
-                restStyles="ml-2 mr-2"
-              /> */}
-
-              {/* <Input placeholder="Address To" name="addressTo" type="text" handleChange={handleChange} />
-              <Input placeholder="Amount (ETH)" name="amount" type="number" handleChange={handleChange} /> */}
-
-              {/* <div className="h-[1px] w-[50%] bg-gray-400 my-2" /> */}
-
-              {/* {isLoading
-                ? <Loader />
-                : ( */}
-                {/* <div className="flex w-full">
-                  <CustomButton 
-                    title="Send"
-                    handleClick={() => handleSubmit}
-                  />
-                </div> */}
-                {/* )} */}
             </div>
           </div>
           <div className={styles.hocBodyWrapper}>

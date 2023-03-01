@@ -107,6 +107,11 @@ const styles = {
 
   // modal
   modalText: 'font-rajdhani font-bold text-3xl text-white mb-6 text-center',
+
+  // balance
+  balance: "w-full text-left mt-2 ml-2",
+  balanceText: "font-poppins font-normal text-dim-white",
+  balanceBold: "font-semibold text-white",
 };
 
 export default styles;

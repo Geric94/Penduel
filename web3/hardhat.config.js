@@ -95,7 +95,7 @@ module.exports = {
   },
   etherscan: {
     apiKey: {
-      fuji: FUJI_TOKEN,
+      avalancheFujiTestnet: process.env.API_KEY_FUJI,
     },
   },
   gasReporter: {
