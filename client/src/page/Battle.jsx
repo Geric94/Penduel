@@ -20,7 +20,6 @@ const Battle = () => {
 	const [maskedWord, setMaskedWord] = useState("");
 	const [guesses, setGuesses] = useState("");
 	const [incorrectGuesses, setIncorrectGuesses] = useState(0);
-	const [gameOver, setGameOver] = useState(false);
 
 	// Set up state variables using the useState hook
 	let alphabet = 'abcdefghijklmnopqrstuvwxyz';
@@ -28,17 +27,9 @@ const Battle = () => {
 	useEffect(() => {
 		const getPlayerInfo = async () => {
 			try {
-				if (gameData.activeBattle == null) {
-					console.log('getPlayerInfo: activeBattle =', gameData.activeBattle);
-					return;
-				}
 				let player01Address;
 				let player02Address;
-				setGameOver(gameData.activeBattle?.status);
-				if (gameOver)
-					setPendingPlayer(false);
-				else
-					Pending();
+				Pending();
 				if (gameData.activeBattle?.players[0].toLowerCase() == walletAddress.toLowerCase()) {
 					player01Address = gameData.activeBattle.players[0];
 					player02Address = gameData.activeBattle.players[1];
@@ -48,11 +39,12 @@ const Battle = () => {
 				}
 				else
 					console.log(`getPlayerInfo: error access gameData, activeBattle is`, gameData.activeBattle)
+
 				let _string = await contract?.getMaskedWord(battleName);
 				setMaskedWord(_string);
 				setGuesses(await contract?.getGuesses(battleName));
 				setIncorrectGuesses(await contract?.getNumberOfIncorrectGuess(battleName));
-				//console.log('getPlayerInfo:maskedWord=', maskedWord);
+
 				if (player01Address!=0x0) {
 					const p1TokenData = await contract.getPlayerToken(player01Address);
 					const player01 = await contract.getPlayer(player01Address);
@@ -61,14 +53,12 @@ const Battle = () => {
 					const p1H = player01.playerHealth.toNumber();
 					const p1M = player01.playerMana.toNumber();
 					setPlayer1({ ...player01, att: p1Att, def: p1Def, health: p1H, mana: p1M, icon: AlyraRedIcon});
-					//console.log('Player1:',player1);
 				}		
 				if (player02Address!=0x0) {
 					const player02 = await contract.getPlayer(player02Address);
 					const p2H = player02.playerHealth.toNumber();
 					const p2M = player02.playerMana.toNumber();
 					setPlayer2({ ...player02, att: 'X', def: 'X', health: p2H, mana: p2M, icon: AlyraGreenIcon });
-					//console.log('getPlayerInfo:pendingPlayer', pendingPlayer);			
 				}
 		
 			} catch (error) {
@@ -77,7 +67,7 @@ const Battle = () => {
 			}
 		};
 
-		//if (contract && gameData.activeBattle) 
+		if (contract && gameData.activeBattle) 
 			getPlayerInfo();
 	}, [contract, gameData, battleName]);
 	
@@ -97,7 +87,7 @@ const Battle = () => {
 	const handleGuess = async (_letter1) => {
 		setCurrentLetter(_letter1);
 
-		if (gameOver) {
+		if (gameData.activeBattle?.status == 2) { //ENDED -> gameover
 			console.log(`You're hanged ${battleName}`);
 			setPendingPlayer(false);
 			try {
@@ -132,9 +122,6 @@ const Battle = () => {
 			if (!gameData?.activeBattle)
 				navigate('/create-battle');
 			}, [2000]);
-		if (gameOver)
-			setPendingPlayer(false);
-		else
 			Pending();
 		return () => clearTimeout(timer);
 	}, []);
@@ -204,7 +191,7 @@ const Battle = () => {
 									onClick={() => handleGuess(letter3)}> {letter3}</button>
 					))}
 				</div>
-				<p className='text-xl text-white'>Letter selected: {currentLetter} {gameOver && 'Game over!'}</p>
+				<p className='text-xl text-white'>Letter selected: {currentLetter} {(gameData.activeBattle?.status == 2)?'Game over!':''}</p>
 
 				<GameInfo />
 			</div>

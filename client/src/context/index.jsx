@@ -15,7 +15,7 @@ export const GlobalContextProvider = ({ children }) => {
   const [gameData, setGameData] = useState({ pendingBattles: [], activeBattle: null});
 	const [showAlert, setShowAlert] = useState({ status: false, type: "info", message: '' });
 	const [battleName, setBattleName] = useState('');
-	const [bet, setBet] = useState("0.01");
+	const [bet, setBet] = useState("0.1");
 	const [errorMessage, setErrorMessage] = useState('');
   const [updateGameData, setUpdateGameData] = useState(0);
 	const [battleGround, setBattleGround] = useState('bg-penduel');

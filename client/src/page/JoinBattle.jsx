@@ -17,7 +17,7 @@ const JoinBattle = () => {
 
 	const handleClick = async (battleName_, bet_) => {
 		try {
-			await contract.joinBattle(battleName_, {value: bet_});
+			await contract.joinBattle(battleName_, {value: bet_, gasLimit: 550000 });
 
 			setShowAlert({ status: true, type: 'success', message: `Joining ${battleName_}` });
 		} catch (error) {
@@ -38,7 +38,7 @@ const JoinBattle = () => {
 						.map((battle, index) => (
 							<div key={battle.name + index} className={`flex flex-row w-80 min-w-80 items-center mb-5`}>
 								<p className={styles.joinBattleTitle}> {index + 1}.{battle.name}</p>
-								<AmountOut amountOut={battle.bet/1e16}/>  {/*convert en avax soit ETH /100 */}
+								<AmountOut amountOut={battle.bet/1e18}/>  {/*convert en avax soit ETH /100 */}
 								<CustomButton title="Join" handleClick={() => handleClick(battle.name, battle.bet)}/>								
 							</div>
 						))

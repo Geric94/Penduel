@@ -46,7 +46,8 @@ context("Penduel", () => {
         penduel = await Penduel.deploy(_metadataUri);
 
         const contract = await penduel.deployed();
-        //console.log('Contract Penduel address: ', contract.address);
+        console.log('Contract Penduel address: ', contract.address);
+        console.log('Contract Penduel balance: ', contract.getBalance());
         //console.log(penduel.functions);
         return { penduel, amount, owner, player1, player2 };
     };
@@ -54,7 +55,7 @@ context("Penduel", () => {
     describe("Deployment", function () {
         // on vérifie toutes les variables/constantes de notre contrat
         it(`${counter++}: admin must be equal to owner`, async function () {
-            const { penduel, owner, player1, player2 } = await loadFixture(deployPenduelFixture);
+            const { penduel, owner } = await loadFixture(deployPenduelFixture);
             console.log('cost create contract: ', (10000*1e18 - await owner.getBalance()), 'wei');
             const admin = await penduel.owner(); // { gasLimit: 5200000 }
             expect(admin).to.be.equal(owner.address, `admin is not owner`);

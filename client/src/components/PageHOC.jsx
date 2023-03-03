@@ -11,37 +11,46 @@ import { SiEthereum } from "react-icons/si";
 import Balance from './Balance';
 import { GetParams } from '../utils/onboard.js';
 
+
 const shortenAddress = (address) => `${address.slice(0, 6)}...${address.slice(address.length - 4)}`;
 
 const PageHOC = (Component, title, description) => () => {
-  const { owner, showAlert, battleGround } = useGlobalContext();
-	const [walletAddress, setWalletAddress] = useState('');
+  const { walletAddress, showAlert, battleGround } = useGlobalContext();
+	//const [accountAddress, setAccountAddress] = useState('');
 	const [balance, setBalance] = useState('');
-	const [addressTo, setAddressTo] = useState('');
-  const [amount, setAmount] = useState('');
+	//const [addressTo, setAddressTo] = useState('');
   const [balanceContract, setContractBalance] = useState('');
 
   const navigate = useNavigate();
 
-  const handleSubmit = (e) => {
-    const { addressTo, amount, keyword, message } = formData;
-    e.preventDefault();
-    if (!addressTo || !amount || !keyword || !message)
-      return;
-    if (isAddress(e.value))
-      return;
-    sendTransaction();
-  };
+  // const handleSubmit = (e) => {
+  //   const { addressTo, amount, keyword, message } = formData;
+  //   e.preventDefault();
+  //   if (!addressTo || !amount || !keyword || !message)
+  //     return;
+  //   if (isAddress(e.value))
+  //     return;
+  //   sendTransaction();
+  // };
 
-  const getAccountAddress = async () => {
-    const currentStep = await GetParams();
-    setWalletAddress(currentStep.account);
-    setBalance(currentStep.balance);
+  const getParam = async () => {
+    const param = await GetParams();
+    //setAccountAddress(param.account);
+    setBalance(param.balance);
   };
 
   useEffect(() => {
-    getAccountAddress();
-	}, [addressTo]);
+    getParam();
+    //getContractBalance();
+	}, [balance, balanceContract]);
+
+  const getContractBalance = async () => {
+    const balance_ = await contract?.getBalance();
+    console.log('Ne marche pas, faire essai dans GetPram', balance_);
+    setContractBalance(balance_);
+    //console.log(ethers.utils.formatEther(balance_), "ETH");
+    //console.log(web3.utils.fromWei(balance_, "ether"), "ETH");
+  };
 
   return (
     <div className={styles.hocContainer}>
@@ -60,7 +69,7 @@ const PageHOC = (Component, title, description) => () => {
                     <SiEthereum fontSize={21} color="#fff" />
                   </div>
                   <div className="flex p-2 font-bold text-xl">
-                    {owner?balance:''}
+                    {balanceContract?balanceContract:'...'}
                   </div>
                 </div>
                 <div className="flex p-2 font-bold text-xl items-center">

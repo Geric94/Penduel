@@ -5,7 +5,7 @@ require('@nomiclabs/hardhat-ethers');
 require("hardhat-gas-reporter");
 require("@typechain/hardhat");
 //require('@nomiclabs/hardhat-waffle')
-//require("@nomiclabs/hardhat-web3");
+require("@nomiclabs/hardhat-web3");
 
 const PRIVATE_KEY = process.env.PRIVATE_KEY || "";
 const FUJI_TOKEN = process.env.FUJI_TOKEN || "";
@@ -21,6 +21,7 @@ const FUJI_TOKEN = process.env.FUJI_TOKEN || "";
 const { types, task } = require("hardhat/config");
 
 //npx hardhat accounts --network fuji
+// 0x3DaC9D64C9bF82294bFF40F15AbeDa041f5b9Def
 task("accounts", "Prints the list of accounts", async (taskArgs, hre) => {
   const accounts = await hre.ethers.getSigners();
 
@@ -30,11 +31,15 @@ task("accounts", "Prints the list of accounts", async (taskArgs, hre) => {
 });
 
 //npx hardhat accounts2 --network fuji
+//[ '0x3DaC9D64C9bF82294bFF40F15AbeDa041f5b9Def' ]
 task("accounts2", "Prints accounts", async (_, { web3 }) => {
   console.log(await web3.eth.getAccounts());
 });
 
-//
+//npx hardhat balance --network localhost --account 0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266
+//10000 ETH
+//npx hardhat balance --network fuji --account 0x3DaC9D64C9bF82294bFF40F15AbeDa041f5b9Def
+//10.668663039964405 ETH
 task("balance", "Prints an account's balance")
   .addParam("account", "The account's address", "", types.string)
   .setAction(async (args) => {
@@ -43,7 +48,20 @@ task("balance", "Prints an account's balance")
     console.log(web3.utils.fromWei(balance, "ether"), "ETH");
   });
 
-//npx hardhat list --network fuji --address 0xb8EB25da417caa49BA37d6CB89d6078C2c69b638
+//npx hardhat balance --network localhost --account 0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266
+//10000.0 ETH
+//npx hardhat balance --network fuji --account 0x3DaC9D64C9bF82294bFF40F15AbeDa041f5b9Def
+//10.668663039964405 ETH
+task("balance2", "Prints an account's balance")
+  .addParam("account", "The account's address")
+  .setAction(async (taskArgs) => {
+    const balance = await ethers.provider.getBalance(taskArgs.account);
+
+    console.log(ethers.utils.formatEther(balance), "ETH");
+  });
+
+//npx hardhat list --network fuji --address 0x3DaC9D64C9bF82294bFF40F15AbeDa041f5b9Def
+//bloque à supply
 task("list", "List all nfts of a proxy address")
   .addParam("address", "Contract proxy address")
   .setAction(async (args, hre) => {
@@ -51,13 +69,13 @@ task("list", "List all nfts of a proxy address")
     console.log("Current account:", owner.address);
     console.log("NFT address:", args.address);
 
-    const Memento = await ethers.getContractFactory("Memento");
-    const memento = await Memento.attach(args.address);
-    const supply = await memento.supply();
+    const Penduel = await ethers.getContractFactory("Penduel");
+    const penduel = await Penduel.attach(args.address);
+    const supply = await penduel.supply();
     for (let i = 0; i < supply; i++) {
-      let owner = await memento.ownerOf(i);
-      let author = await memento.authorOf(i);
-      let uri = await memento.tokenURI(i);
+      let owner = await penduel.ownerOf(i);
+      let author = await penduel.authorOf(i);
+      let uri = await penduel.tokenURI(i);
       console.log(`ID ${i}. Author ${author}. Owner ${owner}. URI ${uri}`);
     }
   });
@@ -78,7 +96,7 @@ module.exports = {
     fuji: {
       chainId: 43113,
       url: 'https://api.avax-test.network/ext/bc/C/rpc',
-      gasPrice: 225000000000,
+      gasPrice: 'auto', // 225000000000,
       accounts: [PRIVATE_KEY],
     },
     localhost: {

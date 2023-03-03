@@ -14,12 +14,8 @@ interface VRFPenduel {
 }
 
 /// @title Penduel
-/// @notice This contract handles the token management and battle logic for the Penduel game
+/// @notice This contract handles battle logic for the Penduel game
 /// @notice Version 1.0.0
-/// @author Ava-Labs
-/// @author Julian Martinez
-/// @author Gabriel Cardona
-/// @author Raj Ranjan
 
 contract Penduel is ERC1155, Ownable, ERC1155Supply {
   address payable immutable pOwner;
@@ -40,7 +36,6 @@ contract Penduel is ERC1155, Ownable, ERC1155Supply {
     return address(this).balance;
   }
 
-
   string public baseURI; // baseURI where token metadata is stored
   uint256 public totalSupply; // Total number of tokens minted
   // uint256 private constant DEVIL = 0;
@@ -51,7 +46,7 @@ contract Penduel is ERC1155, Ownable, ERC1155Supply {
   // uint256 private constant CELESTION = 5;
 
   uint256 public constant MAX_ATTACK_DEFEND_STRENGTH = 10;
-  address private constant _VRF = 0x11F7aD1DF281604F2bd22ba13E334ca4d14d7C28;
+  address private constant _VRF = 0x512a528818ea1BBC93ee378C221Aa93b0798383F;
 
   enum BattleStatus{ PENDING, STARTED, ENDED }
 
@@ -342,7 +337,7 @@ contract Penduel is ERC1155, Ownable, ERC1155Supply {
     uint256 randomWord = VRFPenduel(_VRF).getRandomValue(battleIndex[battleName]);  //comment for testing
     uint256 boundary = (wordsToGuess.length<32)?wordsToGuess.length:32;  //comment for testing
     uint256 indexRandom = (randomWord % boundary);  //comment for testing
-    // uint256 indexRandom = battleIndex[battleName];  //uncomment for testing
+    //uint256 indexRandom = battleIndex[battleName];  //uncomment for testing
     ////////////////////Change for testing //////////////////////////////
 
     // console.log('wordsToGuess' , wordsToGuess[indexRandom]);
@@ -430,7 +425,7 @@ contract Penduel is ERC1155, Ownable, ERC1155Supply {
     if (_findNewLetter)
       _awaitBattleResults(battleName);
     else if (_battle.incorrectGuess >=6)
-      _endBattle(_battle.activePlayer, _battle);
+      _endBattle(address(0), _battle);  //the penduel win
   }
 
   // Awaits battle results
@@ -508,7 +503,9 @@ contract Penduel is ERC1155, Ownable, ERC1155Supply {
     players[p2].playerHealth = 6;
     players[p2].playerMana = 10;
 
-    address _battleLoser = battleWinner == _battle.players[0] ? _battle.players[1] : _battle.players[0];
+    address _battleLoser = address(0);
+    if (battleWinner != address(0))
+      _battleLoser = (battleWinner == _battle.players[0]) ? _battle.players[1] : _battle.players[0];
     emit BattleEnded(_battle.name, battleWinner, _battleLoser); // Emits BattleEnded event
 
     require(battleWinner == _battle.players[0] || battleWinner == _battle.players[1]);

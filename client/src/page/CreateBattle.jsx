@@ -28,7 +28,7 @@ const CreateBattle = () => {
     try {
       //await setBet(bet);
       console.log(battleName, parseUnits(bet)/100);
-      await contract.createBattle(battleName, {value: parseUnits(bet)/100 });
+      await contract.createBattle(battleName, {value: parseUnits(bet)});
       setWaitBattle(true);
     } catch (error) {
       console.log(error);
@@ -42,7 +42,7 @@ const CreateBattle = () => {
 
     try {
       trimmedValue && value; //parseUnits(value);
-      console.log('value: ', value);
+      //console.log('value: ', value);
       setBet(value);
     } catch (e) {
       setErrorMessage(error);

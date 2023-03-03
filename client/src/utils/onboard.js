@@ -5,8 +5,8 @@ function isEthereum() {
 }
 
 function getChainID() {
-  if (isEthereum())  return parseInt(window.ethereum.chainId, 16);
-  
+  if (isEthereum())  
+    return parseInt(window.ethereum.chainId, 16);
   return 0;
 }
 

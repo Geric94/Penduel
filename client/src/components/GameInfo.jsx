@@ -13,7 +13,6 @@ const GameInfo = () => {
 
   const handleBattleExit = async () => {
     const battleName = gameData.activeBattle.name;
-
     try {
       console.log(battleName);
       setShowAlert({ status: true, type: 'info', message: `You're quitting the ${battleName}` });

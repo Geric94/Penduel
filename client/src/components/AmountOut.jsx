@@ -5,7 +5,7 @@ const AmountOut = ({ amountOut }) => {
     return (
         <div className={styles.amountContainer}>
             <input
-                placeholder="0.01"
+                placeholder="0.1"
                 type="number"
                 value={amountOut}
                 className={styles.amountInput}

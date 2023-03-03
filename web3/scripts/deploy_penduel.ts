@@ -1,6 +1,6 @@
 import "@nomiclabs/hardhat-ethers";
 import { ethers, network } from 'hardhat';
-import { verify } from '../utils/verify';
+//import { verify } from '../utils/verify'; doesn't work on fuki
 import console from 'console';
 
 const _metadataUri = 'https://gateway.pinata.cloud/ipfs/https://gateway.pinata.cloud/ipfs/QmX2ubhtBPtYw75Wrpv6HLb1fhbJqxrnbhDo1RViW3oVoi';
@@ -18,7 +18,7 @@ async function main() {
 
   const Penduel = (await deploy('Penduel', _metadataUri)).connect(admin);
 
-  console.log('Penduel contract :', Penduel.address, 'Network:', network.name);
+  console.log('Penduel contract :', Penduel.address, ', Network:', network.name, ', Admin: ', admin.address);
 
   // if (network.name === "fuji") {
   //   console.log("Verifying the smart contract");

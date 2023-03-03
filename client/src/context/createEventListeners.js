@@ -84,7 +84,7 @@ export const createEventListeners = ({ navigate, contract, provider, walletAddre
       setShowAlert({ status: true, type: 'failure', message: 'You lost!' });
     }
 
-    navigate('/');
+    //navigate('/');
     setUpdateGameData((updateGameData) => updateGameData + 1);
   });
 

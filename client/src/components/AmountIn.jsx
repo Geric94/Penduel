@@ -7,10 +7,10 @@ const AmountIn = ({ value, onChange }) => {
   return (
     <div className={styles.amountContainer}>
       <input
-        placeholder="0.01"
+        placeholder="0.1"
         type="number"
         value={value}
-        step="0.01"
+        step="0.1"
         onChange={(e) => typeof onChange === "function" && onChange(e.target.value)}
         className={styles.amountInput}
       />
