@@ -47,3 +47,5 @@ join battle          ETH
 player2 balance:    10.261800645 ETH
 register player2:   10.253800645 ETH
 joinBattle:          ETH
+
+
