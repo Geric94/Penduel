@@ -11,10 +11,11 @@ const Home = () => {
 
 	const handleClick = async () => {
 		try {
-			const playerExists = await contract.isPlayer(walletAddress);
+			let playerExists = await contract.isPlayer(walletAddress);
+			console.log('before register; ',playerExists);
 
 			if (!playerExists) {
-				await contract.registerPlayer(playerName, playerName+'Token', { gasLimit: 500000 });
+				await contract.registerPlayer(playerName, playerName+'Token', { gasLimit: 360000 });
 
 				setShowAlert({ status: true, type: "info", message: `${playerName} is being summoned!`, });
 
@@ -22,6 +23,7 @@ const Home = () => {
 				return () => clearTimeout(timer);
 			}
 		} catch (error) {
+			console.log(error);
 			setErrorMessage(error);
 		}
 	};

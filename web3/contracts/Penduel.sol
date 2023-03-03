@@ -508,7 +508,7 @@ contract Penduel is ERC1155, Ownable, ERC1155Supply {
       _battleLoser = (battleWinner == _battle.players[0]) ? _battle.players[1] : _battle.players[0];
     emit BattleEnded(_battle.name, battleWinner, _battleLoser); // Emits BattleEnded event
 
-    require(battleWinner == _battle.players[0] || battleWinner == _battle.players[1]);
+    require(battleWinner == address(0) || battleWinner == _battle.players[0] || battleWinner == _battle.players[1], 'error end battle with battlewinner');
     uint256 toSend =  _battle.bet*2;
     _battle.bet = 0;
     playerWithdraw( _battle, toSend );

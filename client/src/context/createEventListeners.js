@@ -17,11 +17,11 @@ export const createEventListeners = ({ navigate, contract, provider, walletAddre
 	const NewPlayerEventFilter = contract.filters.NewPlayer();
 
 	AddNewEvent(NewPlayerEventFilter, provider, ({ args}) => {
-		//console.log(`New player "${args.playerName}" created!`, args);
-
 		if (walletAddress === args.owner) {
 			setShowAlert({ status: true, type: 'success', message: `Player "${args.playerName}" has been successfully registered` });
 		}
+    else
+    	console.log(`New player "${args.playerName}" created!`, args);
 	});
 
   const BattleCreateEventFilter = contract.filters.BattleCreate();
@@ -84,8 +84,8 @@ export const createEventListeners = ({ navigate, contract, provider, walletAddre
       setShowAlert({ status: true, type: 'failure', message: 'You lost!' });
     }
 
-    //navigate('/');
     setUpdateGameData((updateGameData) => updateGameData + 1);
+    navigate('/');
   });
 
   // The word is add to the list

@@ -28,7 +28,7 @@ const CreateBattle = () => {
     try {
       //await setBet(bet);
       console.log(battleName, parseUnits(bet)/100);
-      await contract.createBattle(battleName, {value: parseUnits(bet)});
+      await contract.createBattle(battleName, {value: parseUnits(bet), gasLimit: 220000 });
       setWaitBattle(true);
     } catch (error) {
       console.log(error);

@@ -17,7 +17,7 @@ const JoinBattle = () => {
 
 	const handleClick = async (battleName_, bet_) => {
 		try {
-			await contract.joinBattle(battleName_, {value: bet_, gasLimit: 550000 });
+			await contract.joinBattle(battleName_, {value: bet_, gasLimit: 260000 });
 
 			setShowAlert({ status: true, type: 'success', message: `Joining ${battleName_}` });
 		} catch (error) {

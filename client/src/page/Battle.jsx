@@ -109,7 +109,7 @@ const Battle = () => {
 
 		try {
 			let bytes2 = new TextEncoder().encode(_letter1);
-			await contract.chosenLetter(bytes2, battleName, { gasLimit: 200000 });
+			await contract.chosenLetter(bytes2, battleName, { gasLimit: 180000 });
 			
 		} catch (error) {
 			console.log(error, _letter1, maskedWord, battleName);
@@ -144,10 +144,10 @@ const Battle = () => {
 
 	return (
 		<>
- 		{showAlert?.status && <Alert type={showAlert.type} message={showAlert.message} />}
-		<div className={styles.hocContainer}>
-
 		{pendingPlayer && <PendingPlayer />}
+
+		{showAlert?.status && <Alert type={showAlert.type} message={showAlert.message} />}
+		<div className={styles.hocContainer}>
 
 		{/* <div className={`${styles.flexBetween} ${styles.gameContainer} ${battleGround}`}> */}
 		{/* <div className="flex flex-col mb-5"> */}
