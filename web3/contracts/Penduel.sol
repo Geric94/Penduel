@@ -288,11 +288,12 @@ contract Penduel is ERC1155, Ownable, ERC1155Supply {
   /// @param battleName battle name; set by player
   //function createBattle(string memory battleName) external returns (Battle memory) {
   function createBattle(string memory battleName) external payable {
+    require(wordsToGuess.length > 0, "no words in the list, ask owner of contract");
     require(isPlayer(msg.sender), "Please Register Player First"); // Require that the player is registered
     require(!isBattle(battleName), "Battle already exists!"); // Require battle with same name should not exist
     require( msg.sender.balance >= msg.value, "createBattle: Error, insufficent vault balance");
-    require( msg.value > (0.05 * 1e12), "Error, minimum 0.05 Avax"); //EGA
-    console.log('balance: ', msg.sender.balance, ' value: ', msg.value);
+    require( msg.value > (0.1 * 1e12), "Error, minimum 0.1 Avax"); //EGA
+    //console.log('balance: ', msg.sender.balance, ' value: ', msg.value);
 
     bytes32 battleHash = keccak256(abi.encode(battleName));
 
@@ -337,19 +338,15 @@ contract Penduel is ERC1155, Ownable, ERC1155Supply {
     uint256 randomWord = VRFPenduel(_VRF).getRandomValue(battleIndex[battleName]);  //comment for testing
     uint256 boundary = (wordsToGuess.length<32)?wordsToGuess.length:32;  //comment for testing
     uint256 indexRandom = (randomWord % boundary);  //comment for testing
-    //uint256 indexRandom = battleIndex[battleName];  //uncomment for testing
+    // uint256 indexRandom = battleIndex[battleName];  //uncomment for testing
     ////////////////////Change for testing //////////////////////////////
 
-    // console.log('wordsToGuess' , wordsToGuess[indexRandom]);
     wordToGuess = wordsToGuess[indexRandom];
     _battle.maskedWord = underscores(bytes(wordToGuess));
     string memory letter = string(abi.encodePacked(_battle.maskedWord[0]));
     _battle.guesses = string(letter);
 
     updateBattle(battleName, _battle);
-
-    // console.log('maskedWord',  string(_battle.maskedWord));
-    //console.log('joinBattle: ActivePlayer',  getActivePlayer(battleName));
 
     players[playerIndex[_battle.players[0]]].inBattle = true;
     players[playerIndex[_battle.players[1]]].inBattle = true;
@@ -378,10 +375,8 @@ contract Penduel is ERC1155, Ownable, ERC1155Supply {
   }
 
   function chosenLetter(bytes1 pLetter, string memory battleName) external {
-    //console.log('chosenLetter');
     bool _findNewLetter = false;
     Battle memory _battle = getBattle(battleName);
-    //console.log('chosenLetter: ActivePlayer',  msg.sender, getActivePlayer(battleName));
 
     require( _battle.battleStatus == BattleStatus.STARTED, "Battle not started. Please tell another player to join the battle" ); // Require that battle has started
     require( _battle.battleStatus != BattleStatus.ENDED, "chosenLetter: Battle has already ended" ); // Require that battle has not ended
@@ -389,26 +384,18 @@ contract Penduel is ERC1155, Ownable, ERC1155Supply {
     require( msg.sender ==  getActivePlayer(battleName), "It is not your turn" );
     require( _battle.incorrectGuess <= 6, "Too bad choice" );
 
-    //console.log('ActivePlayer',  getActivePlayer(battleName));
-    //EGA require(_battle.letters[_battle.players[0] == msg.sender ? 0 : 1] == 0, "You have already chosen this letter");
-    //_registerPlayerLetter(_battle.players[0] == msg.sender ? 0 : 1, pLetter, battleName);
-    //console.log('maskedWord',  string(_battle.maskedWord));
     (_findNewLetter, _battle.maskedWord) = tryTheChosenLetter(_battle.maskedWord, bytes(wordToGuess), pLetter);
 
-    //console.log('chosenLetter avant switch: ActivePlayer',  getActivePlayer(battleName), _findNewLetter);
     //Player find a letter can reply
     if (!_findNewLetter) {
       uint indexP1 = playerIndex[_battle.players[0]];
       uint indexP2 = playerIndex[_battle.players[1]];
-      // console.log(indexP1, indexP2);
 
       if (players[indexP1].playerAddress == _battle.activePlayer) {
         players[indexP1].playerHealth -= 1;
-        // console.log(players[indexP1].playerHealth);
       }
       else if (players[indexP2].playerAddress == _battle.activePlayer) {
         players[indexP2].playerHealth -= 1;
-        // console.log(players[indexP2].playerHealth);
       } else {
         console.log("error: !_findNewLetter");
       }
@@ -460,10 +447,9 @@ contract Penduel is ERC1155, Ownable, ERC1155Supply {
 
   /// @notice a withdraw function for players
   function playerWithdraw( Battle memory battle, uint256 gain ) internal onlyPlayer(battle) {
-    //require(battle != undefine, 'battle');
     require(gain > 0, 'gain <= 0');
     uint256 withdraw = gain;
-    address payable _winner = payable(battle. winner);
+    address payable _winner = payable(battle.winner);
     gain = 0;
     emit PlayerWithdraw(_winner, withdraw);
     // _winner.transfer(address(this).balance);
@@ -489,7 +475,10 @@ contract Penduel is ERC1155, Ownable, ERC1155Supply {
     require(_battle.battleStatus != BattleStatus.ENDED, "_endBattle: Battle already ended"); // Require that battle has not ended
 
     _battle.battleStatus = BattleStatus.ENDED;
-    _battle.winner = battleWinner;
+    if (battleWinner == address(0))
+      _battle.winner = pOwner;
+    else
+      _battle.winner = battleWinner;
     updateBattle(_battle.name, _battle);
 
     uint p1 = playerIndex[_battle.players[0]];
@@ -504,11 +493,11 @@ contract Penduel is ERC1155, Ownable, ERC1155Supply {
     players[p2].playerMana = 10;
 
     address _battleLoser = address(0);
-    if (battleWinner != address(0))
+    if (battleWinner != pOwner)
       _battleLoser = (battleWinner == _battle.players[0]) ? _battle.players[1] : _battle.players[0];
     emit BattleEnded(_battle.name, battleWinner, _battleLoser); // Emits BattleEnded event
 
-    require(battleWinner == address(0) || battleWinner == _battle.players[0] || battleWinner == _battle.players[1], 'error end battle with battlewinner');
+    require(battleWinner == pOwner || battleWinner == _battle.players[0] || battleWinner == _battle.players[1], 'error end battle with battlewinner');
     uint256 toSend =  _battle.bet*2;
     _battle.bet = 0;
     playerWithdraw( _battle, toSend );
@@ -565,22 +554,50 @@ contract Penduel is ERC1155, Ownable, ERC1155Supply {
   }
 
   ///WORD
-  function getHangWord(string memory maskedWord) external returns (bytes memory hangWord) {
-    require(isLowerCaseWord(maskedWord), "Error, word with lowercase letters only");
+  // function getHangWord(string memory maskedWord) external returns (bytes memory hangWord) {
+  //   require(isLowerCaseWord(maskedWord), "Error, word with lowercase letters only");
 
-    uint256 randomWord = VRFPenduel(_VRF).getRandomValue(0);
-    uint256 indexRandom = (randomWord % wordsToGuess.length);
-    hangWord = bytes(wordsToGuess[indexRandom]);
+  //   uint256 randomWord = VRFPenduel(_VRF).getRandomValue(0);
+  //   uint256 indexRandom = (randomWord % wordsToGuess.length);
+  //   hangWord = bytes(wordsToGuess[indexRandom]);
 
-    wordsToGuess.push(maskedWord);
-    return hangWord;
+  //   wordsToGuess.push(maskedWord);
+  //   return hangWord;
+  // }
+
+  ///LIST OF WORDS
+
+function compareStrings(string memory firstString, string memory secondString) internal pure returns (bool) {
+  return keccak256(bytes(firstString)) == keccak256(bytes(secondString));
+}
+
+function findWord( string memory word) internal view onlyOwner returns (bool){
+    require(wordsToGuess.length > 0, "no words in the list");
+    for (uint i = 0; i < wordsToGuess.length; i++) { 
+        if (compareStrings(wordsToGuess[i], word)) {
+            return true;
+        }   
+    }
+    return false;
   }
 
-  ///WORD
   function addWord(string memory wordToAdd) external onlyOwner {
     require(isLowerCaseWord(wordToAdd), "Error, word with lowercase letters only");
+    require(findWord(wordToAdd), "Error, word already in the list");
     wordsToGuess.push(wordToAdd);
     emit WordAdded(wordToAdd);
+  }
+
+  function numberOfWords() external view onlyOwner  returns (uint256) {
+    return wordsToGuess.length;
+  }
+
+  function removeAll() external onlyOwner {
+    require(wordsToGuess.length > 0, "no word to remove");
+    string[] storage list = wordsToGuess;
+    for (uint i = 0; i < wordsToGuess.length; i++)
+      list.pop();
+    wordsToGuess = list;
   }
 
   /// @param b bytes1 to check if is letter or not

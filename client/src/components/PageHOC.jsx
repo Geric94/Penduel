@@ -10,16 +10,15 @@ import styles from '../styles';
 import { SiEthereum } from "react-icons/si";
 import Balance from './Balance';
 import { GetParams } from '../utils/onboard.js';
-
+//import {getBalance} from '../../node_modules/web3';
+//import { parseEther } from 'ethers/lib/utils';
 
 const shortenAddress = (address) => `${address.slice(0, 6)}...${address.slice(address.length - 4)}`;
 
 const PageHOC = (Component, title, description) => () => {
-  const { walletAddress, showAlert, battleGround } = useGlobalContext();
-	//const [accountAddress, setAccountAddress] = useState('');
+  const { contract, walletAddress, showAlert, battleGround } = useGlobalContext();
 	const [balance, setBalance] = useState('');
-	//const [addressTo, setAddressTo] = useState('');
-  const [balanceContract, setContractBalance] = useState('');
+  const [contractBalance, setContractBalance] = useState('');
 
   const navigate = useNavigate();
 
@@ -37,20 +36,26 @@ const PageHOC = (Component, title, description) => () => {
     const param = await GetParams();
     //setAccountAddress(param.account);
     setBalance(param.balance);
+    if (contract) {
+      let lBalance = await contract?.getBalance();///1e18;
+      setContractBalance(lBalance.toString());
+      //console.log('contract: ',contract, 'contractBalance: ', contractBalance, 'balance: ', balance);  
+    }
   };
+
+  // const getContractBalance = async () => {
+  //   if (contract) {
+  //     let lBalance = await contract?.getBalance();///1e18;
+  //     setContractBalance(lBalance.toString());
+  //     //console.log('contract: ',contract, 'contractBalance: ', contractBalance, 'balance: ', balance);  
+  //   }
+  // };
 
   useEffect(() => {
     getParam();
     //getContractBalance();
-	}, [balance, balanceContract]);
+	}, [balance, contractBalance]);
 
-  const getContractBalance = async () => {
-    const balance_ = await contract?.getBalance();
-    console.log('Ne marche pas, faire essai dans GetPram', balance_);
-    setContractBalance(balance_);
-    //console.log(ethers.utils.formatEther(balance_), "ETH");
-    //console.log(web3.utils.fromWei(balance_, "ether"), "ETH");
-  };
 
   return (
     <div className={styles.hocContainer}>
@@ -69,7 +74,8 @@ const PageHOC = (Component, title, description) => () => {
                     <SiEthereum fontSize={21} color="#fff" />
                   </div>
                   <div className="flex p-2 font-bold text-xl">
-                    {balanceContract?balanceContract:'...'}
+                  <Balance tokenBalance={contractBalance}/>
+                  {/* {contractBalance?Math.round(contractBalance * 100)/100:'...'} */}
                   </div>
                 </div>
                 <div className="flex p-2 font-bold text-xl items-center">

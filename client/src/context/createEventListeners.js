@@ -95,4 +95,11 @@ export const createEventListeners = ({ navigate, contract, provider, walletAddre
       setShowAlert({ status: true, type: 'success', message: 'The word is add to the list' });
   });
 
+  // The word is add to the list
+  const PlayerWithdrawEventFilter = contract.filters.PlayerWithdraw();
+
+  AddNewEvent(PlayerWithdrawEventFilter, provider, ({ args }) => {
+      setShowAlert({ status: true, type: 'success', message: 'withDraw' });
+  });
+
 }

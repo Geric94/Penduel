@@ -9,7 +9,6 @@ const CustomInput = ({ label, placeHolder, value, handleValueChange, restStyles 
             type='text'
             placeholder={placeHolder}
             value={value}
-            step="0.01"
             onChange={(e) => {
                 if (e.target.value === '' || regex.test(e.target.value)) 
                     handleValueChange(e.target.value);

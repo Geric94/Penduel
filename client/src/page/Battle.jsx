@@ -144,10 +144,10 @@ const Battle = () => {
 
 	return (
 		<>
-		{pendingPlayer && <PendingPlayer />}
-
-		{showAlert?.status && <Alert type={showAlert.type} message={showAlert.message} />}
+ 		{showAlert?.status && <Alert type={showAlert.type} message={showAlert.message} />}
 		<div className={styles.hocContainer}>
+
+		{pendingPlayer && <PendingPlayer />}
 
 		{/* <div className={`${styles.flexBetween} ${styles.gameContainer} ${battleGround}`}> */}
 		{/* <div className="flex flex-col mb-5"> */}

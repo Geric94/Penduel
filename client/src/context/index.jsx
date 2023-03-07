@@ -3,6 +3,7 @@ import { ethers } from 'ethers';
 import Web3Modal from 'web3modal';
 import { useNavigate } from "react-router-dom";
 
+import { GetParams } from '../utils/onboard.js';
 import { ABI, ADDRESS } from '../contract';
 import { createEventListeners} from './createEventListeners';
 
@@ -10,20 +11,46 @@ const GlobalContext = createContext();
 
 export const GlobalContextProvider = ({ children }) => {
 	const [walletAddress, setWalletAddress] = useState('');
+	const [battleGround, setBattleGround] = useState('bg-penduel');
 	const [contract, setContract] = useState(null);
 	const [provider, setProvider] = useState(null);
-  const [gameData, setGameData] = useState({ pendingBattles: [], activeBattle: null});
+  const [step, setStep] = useState(1);
+  const [gameData, setGameData] = useState({ players: [], pendingBattles: [], activeBattle: null});
 	const [showAlert, setShowAlert] = useState({ status: false, type: "info", message: '' });
 	const [battleName, setBattleName] = useState('');
 	const [bet, setBet] = useState("0.1");
 	const [errorMessage, setErrorMessage] = useState('');
   const [updateGameData, setUpdateGameData] = useState(0);
-	const [battleGround, setBattleGround] = useState('bg-penduel');
 
   const player1Ref = useRef();
   const player2Ref = useRef();
 
 	const navigate = useNavigate();
+
+  //* Set battleground to local storage
+  useEffect(() => {
+    const isBattleground = localStorage.getItem('battleground');
+
+    if (isBattleground) {
+      setBattleGround(isBattleground);
+    } else {
+      localStorage.setItem('battleground', battleGround);
+    }
+  }, []);
+
+  //* Reset web3 onboarding modal params
+  useEffect(() => {
+    const resetParams = async () => {
+      const currentStep = await GetParams();
+      //console.log({currentStep});
+      setStep(currentStep.step);
+    };
+
+    resetParams();
+
+    window?.ethereum?.on('chainChanged', () => resetParams());
+    window?.ethereum?.on('accountsChanged', () => resetParams());
+  }, []);
 
 	//* Set the wallet address to the state
 	const updateCurrentWalletAddress = async () => {
@@ -57,8 +84,8 @@ export const GlobalContextProvider = ({ children }) => {
 
   //* Activate event listeners for the smart contract
 	useEffect(() => {
-		if(contract) {
-			createEventListeners({
+      if (step === -1 && contract) {
+        createEventListeners({
         navigate,
         contract,
         provider,
@@ -69,8 +96,7 @@ export const GlobalContextProvider = ({ children }) => {
         setUpdateGameData,
      });
     }
-  }, [contract]);
-
+  }, [contract, step]);
 
   //* Set the game data to the state
   useEffect(() => {
