@@ -10,7 +10,7 @@ Successfully generated 62 typings!
 Compiled 16 Solidity files successfully
 
 
-Low level call in Penduel.playerWithdraw(Penduel.Battle,uint256) (contracts/Penduel.sol#449-461):
+Low level call in Penduel.playerWithdraw(Penduel.Battle,uint256) (contracts/Penduel.sol#450-461):
         - (success) = _winner.call{value: withdraw}() (contracts/Penduel.sol#457)
 Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#low-level-calls
 
@@ -19,6 +19,7 @@ Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#missing
 
 Penduel.baseURI (contracts/Penduel.sol#39) should be immutable 
 Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#state-variables-that-could-be-declared-immutable
+. analyzed (17 contracts with 84 detectors), 3 result(s) found
 PS C:\Projets\Penduel\web3>
 
 

@@ -27,10 +27,10 @@ contract Penduel is ERC1155, Ownable, ERC1155Supply {
       _;
   }
     
-  function ownerWithdraw(uint amount) external {
-    require(msg.sender == pOwner, "caller is not owner");
-    payable(msg.sender).transfer(amount);
-  }
+  // function ownerWithdraw(uint amount) external {
+  //   require(msg.sender == pOwner, "caller is not owner");
+  //   payable(msg.sender).transfer(amount);
+  // }
 
   function getBalance() external view returns (uint) {
     return address(this).balance;
@@ -193,6 +193,7 @@ contract Penduel is ERC1155, Ownable, ERC1155Supply {
   /// @param _metadataURI baseURI where token metadata is stored
   constructor(string memory _metadataURI) ERC1155(_metadataURI) {
     pOwner = payable(msg.sender);
+    console.log(pOwner);
     baseURI = _metadataURI; // Set baseURI
     initialize();
   }
@@ -497,18 +498,10 @@ contract Penduel is ERC1155, Ownable, ERC1155Supply {
       _battleLoser = (battleWinner == _battle.players[0]) ? _battle.players[1] : _battle.players[0];
     emit BattleEnded(_battle.name, battleWinner, _battleLoser); // Emits BattleEnded event
 
-    require(battleWinner == pOwner || battleWinner == _battle.players[0] || battleWinner == _battle.players[1], 'error end battle with battlewinner');
+    require(battleWinner == address(0) || battleWinner == _battle.players[0] || battleWinner == _battle.players[1], 'error end battle with battlewinner');
     uint256 toSend =  _battle.bet*2;
     _battle.bet = 0;
     playerWithdraw( _battle, toSend );
-
-    // (bool success, ) = battleWinner.call{value: toSend}(
-    //     abi.encodeWithSignature("receive()", battleWinner, _battle.bet*2)
-    //     //abi.encodeWithSignature("doesNotExist()")
-    // );
-    // require(success, "Failed to send Ether");
-    // if (!success)
-    //   console.log('not sent:', success);
 
     return _battle;
   }

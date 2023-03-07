@@ -1,10 +1,11 @@
 {
   "name": "hardhat-project",
-  "private":"true",
+  "private": "true",
   "dependencies": {
     "@chainlink/contracts": "^0.5.1",
     "@nomicfoundation/hardhat-network-helpers": "^1.0.7",
     "@openzeppelin/contracts": "^4.8.0",
+    "@openzeppelin/test-helpers": "^0.5.16",
     "dotenv": "^16.0.3"
   },
   "devDependencies": {

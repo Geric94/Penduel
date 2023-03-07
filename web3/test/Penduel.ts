@@ -1,19 +1,15 @@
 import { expect, assert } from "chai";
-//import { ethers } from "hardhat";
 import { loadFixture } from "@nomicfoundation/hardhat-network-helpers";
-// import { anyValue } from "@nomicfoundation/hardhat-chai-matchers/withArgs";
 import { Penduel } from "../typechain-types";
 import { VRFv2Consumer } from "../typechain-types";
-//const { ethers } = require('hardhat');
-//import hre from 'hardhat';
 import { parseEther } from 'ethers/lib/utils';
-import { BigNumber } from "ethers";
-//import { BigNumber } from "ethers";
 
 const _metadataUri = 'https://gateway.pinata.cloud/ipfs/https://gateway.pinata.cloud/ipfs/QmX2ubhtBPtYw75Wrpv6HLb1fhbJqxrnbhDo1RViW3oVoi';
 
 context("Penduel", () => {
-    let vrf: VRFv2Consumer;
+    //doesn't work with typescrypt need analyse
+    //const { expectEvent } = require(`@openzeppelin/test-helpers`);
+    let vrf: VRFv2Consumer;  
     let penduel: Penduel;
     // variable qui permet de numéroter nos tests
     let counter = 1;
@@ -224,7 +220,7 @@ context("Penduel", () => {
             await penduel.connect(player1).registerPlayer("Player1", "Player1Token", { gasLimit: 360000});
             await penduel.connect(player1).createBattle("Battle1", {value: parseEther('0.0005'), gasLimit: 220000});
             await penduel.connect(player2).registerPlayer("Player2", "Player2Token", { gasLimit: 360000});
-            //await penduel.connect(player2).joinBattle("Battle1", { value: parseEther('0.0005'), gasLimit: 260000}); 
+            await penduel.connect(player2).joinBattle("Battle1", { value: parseEther('0.0005'), gasLimit: 260000}); 
             await expect(penduel.connect(player1).joinBattle("Battle1", { value: parseEther('0.0005'), gasLimit: 260000})).to.be
                 .revertedWith("Only player two can join a battle"); 
         });
@@ -236,7 +232,7 @@ context("Penduel", () => {
             await penduel.connect(player2).registerPlayer("Player2", "Player2Token", { gasLimit: 360000});
             // let penduelBalanceBefore: BigNumber = await penduel.getBalance();
             // let player2BalanceBefore: BigNumber = await player2.getBalance();
-            //await penduel.connect(player2).joinBattle("Battle1", { value: parseEther('0.0005'), gasLimit: 260000}); 
+            await penduel.connect(player2).joinBattle("Battle1", { value: parseEther('0.0005'), gasLimit: 260000}); 
             // console.log('Join Battle Cost :');
             // console.log('penduel: ', (await penduel.getBalance()).sub(penduelBalanceBefore));
             // console.log('player2: ', (await player2.getBalance()).sub(player2BalanceBefore));
@@ -400,18 +396,25 @@ context("Penduel", () => {
         });
         it(`${counter++}: two players don't find the word`, async () => {
             const { penduel, owner, player1, player2 } = await loadFixture(deployPenduelFixture);
-            await penduel.connect(player1).registerPlayer("Player1", "Player1Token", { gasLimit: 360000});
-            await penduel.connect(player1).createBattle("Battle1", {value: parseEther('0.0005'), gasLimit: 220000});
+            const eventNewPlayer = await penduel.connect(player1).registerPlayer("Player1", "Player1Token", { gasLimit: 360000});
+            //console.log('eventNewPlayer', eventNewPlayer);
+            //await expectEvent(eventNewPlayer, "NewPlayer", { owner: player1, playerName: 'Player1' });
+            await penduel.connect(player1).createBattle("Battle1", {value: parseEther('0.1'), gasLimit: 220000});
             await penduel.connect(player2).registerPlayer("Player2", "Player2Token", { gasLimit: 360000});
-            await penduel.connect(player2).joinBattle("Battle1", { value: parseEther('0.0005'), gasLimit: 2600000 });
-            await penduel.connect(player1).chosenLetter(new TextEncoder().encode('b'), "Battle1", { gasLimit: 180000 });
+            const BattleBegin = await penduel.connect(player2).joinBattle("Battle1", { value: parseEther('0.1'), gasLimit: 2600000 });
+            //console.log('BattleBegin', BattleBegin);
+            //await expectEvent(BattleBegin, "BattleBegin", { battleName: "Battle1", player1: player1, player2: player2, maskedWord: 'g______' });
+              
             await penduel.connect(player1).chosenLetter(new TextEncoder().encode('c'), "Battle1", { gasLimit: 180000 });
-            await penduel.connect(player1).chosenLetter(new TextEncoder().encode('f'), "Battle1", { gasLimit: 180000 });
+            await penduel.connect(player2).chosenLetter(new TextEncoder().encode('f'), "Battle1", { gasLimit: 180000 });
             await penduel.connect(player1).chosenLetter(new TextEncoder().encode('g'), "Battle1", { gasLimit: 180000 });
-            await penduel.connect(player1).chosenLetter(new TextEncoder().encode('h'), "Battle1", { gasLimit: 180000 });
+            await penduel.connect(player2).chosenLetter(new TextEncoder().encode('h'), "Battle1", { gasLimit: 180000 });
             await penduel.connect(player1).chosenLetter(new TextEncoder().encode('i'), "Battle1", { gasLimit: 180000 });
-            //expect((await penduel.getBattle("Battle1")).maskedWord).to.be.equal('0x676f6f64627965'); //  'goodbye'
+            await penduel.connect(player2).chosenLetter(new TextEncoder().encode('j'), "Battle1", { gasLimit: 180000 });
+            expect((await penduel.getBattle("Battle1")).maskedWord).to.be.equal('0x675f5f5f5f5f5f'); //  'g______'
+            expect((await penduel.getBattle("Battle1")).incorrectGuess).to.be.equal(6);            
             expect((await penduel.getBattle("Battle1")).battleStatus).to.be.equal(2);  //BattleStatus.ENDED
+            //console.log((await penduel.getBattle("Battle1")));
             expect((await penduel.getBattle("Battle1")).winner).to.be.equal(owner.address);
         });
     });
