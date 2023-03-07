@@ -453,7 +453,7 @@ contract Penduel is ERC1155, Ownable, ERC1155Supply {
     address payable _winner = payable(battle.winner);
     gain = 0;
     emit PlayerWithdraw(_winner, withdraw);
-    // _winner.transfer(address(this).balance);
+
     (bool success, ) = _winner.call{value: withdraw}("");
     assert(success);
     if (!success)

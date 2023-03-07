@@ -40,21 +40,26 @@ npx hardhat balance --network fuji --account 'CONTRACT_Or_WALET_ADDRESS'
 npx hardhat accounts
 npx hardhat verify --network fuji --constructor-args ./scripts/args/avaxFuji.js 'CONTRACT_ADDRESS' + ARG
 
-'0x3DaC9D64C9bF82294bFF40F15AbeDa041f5b9Def'    owner       10.734333794345982376 ETH
-'0x6B3161d1ecc56039f107ff1211383068Eb90BbbD'    player1     9.770797093749999999 ETH
-'0xa3ecE30f15FFfE13eB8156F12bF5B613A7Ecd073'    player2     9.96613163 ETH 
-'0x868310D9e4d73aD64a79702056e25932045EE2e2'    contract    0 ETH
+'0x3DaC9D64C9bF82294bFF40F15AbeDa041f5b9Def'    owner       9.538384994345982376 ETH
+'0x6B3161d1ecc56039f107ff1211383068Eb90BbbD'    player1     9.648689368749999999 ETH
+'0xa3ecE30f15FFfE13eB8156F12bF5B613A7Ecd073'    player2     9.84281823 ETH 
+'0x94a953f0E05DFb802fa5d07238E9A0e9BaE178B3'    contract    0 ETH
 
 contract balance:   0 ETH
-register player1:   9.762372993749999999 ETH
-register player2:   9.95856253 ETH
-create battle p1:    9.657209143749999999 ETH
-contract            0.1 ETH
-join battle p2:     9.85242658 ETH
+register player1:   9.640265818749999999 ETH
+register player2:   9.83524968 ETH
+create battle p1:   9.435101968749999999 ETH
 contract            0.2 ETH
-chosen letter p1:   9.654084218749999999 ETH
-chosen letter p2:   9.84966583 ETH
-chosen letter p1:   9.651386793749999999 ETH
-chosen letter p2:   9.84690508 ETH
-chosen letter p1:   9.648689368749999999 ETH
-chosen letter p2:   9.84281823 ETH
+join battle p2:      ETH
+contract            0.4 ETH
+chosen letter p1:   9.431977043749999999 ETH
+chosen letter p2:   9.62635353 ETH
+chosen letter p1:   9.429279618749999999 ETH
+chosen letter p2:   9.62359278 ETH
+chosen letter p1:   9.426582193749999999 ETH
+chosen letter p2:   9.61923753 ETH
+
+owner       10.136806384345982376 ETH
+player1     9.426582193749999999 ETH
+player2     9.61923753 ETH
+contract    0 ETH
