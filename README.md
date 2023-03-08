@@ -1,12 +1,19 @@
 # Penduel
 
-This project demonstrates a basic Hardhat use case. It comes with a sample contract, a test for that contract, and a script that deploys that contract.
+This project demonstrates a case of use of a web3 basic game. 
+![Penduel](/client/public/CreateBattle.png)
 
-Try running some of the following tasks:
+It is delivered with an example of a contract, a test for this contract and a script which deploys this contract.
+go to /we3/README.md
 
-```shell
-npx hardhat help
-npx hardhat test
-REPORT_GAS=true npx hardhat test
-npx hardhat node
-npx hardhat run scripts/deploy.ts
+and a client.
+go to /client README.md
+
+This contract uses the Fuji Tesnet avalanche but you can use yours.
+
+You have to install this before:
+
+https://code.visualstudio.com/docs/?dv=win64user
+
+https://nodejs.org/en/download/
+
