@@ -44,6 +44,11 @@ Verify that your are the good owner by pressing 'Owner' button
 and press 'requestRandonWords' to get your 32 random values
 you can see if it's works with the 'randomValues' button to put an index between 0 and 31
 
+# Add a word
+Lauch remix
+https://remix.ethereum.org/
+Open the Penduel contract file: /web3/contracts/Penduel.sol
+
 # Installation of the hanging contract (Penduel)
 ```shell
 cd web3
