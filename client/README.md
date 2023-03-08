@@ -13,3 +13,7 @@ npm run dev --reset
 # Get Avax for your wallet
 https://faucets.chain.link/fuji
 
+# For deploy
+```shell
+npm run build
+```
