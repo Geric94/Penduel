@@ -11,11 +11,7 @@ https://penduel.netlify.app
 
 You don't need to install (Core) the Avalanche Wallet, Metamask also works.
 
-It is delivered with an example of a contract, a test for this contract and a script which deploys this contract.
-goto: https://github.com/Geric94/Penduel/blob/master/web3/README.md
-
-and a client.
-goto: https://github.com/Geric94/Penduel/blob/master/client/README.md
+It is delivered with an example of a contract, a test for this contract and a script which deploys this contract: [web3/README.md](https://github.com/Geric94/Penduel/blob/master/web3/README.md) and a client: [client/README.md](https://github.com/Geric94/Penduel/blob/master/client/README.md)
 
 This contract uses the Fuji Tesnet avalanche but you can use yours.
 
