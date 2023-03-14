@@ -13,7 +13,7 @@ import { GetParams } from '../utils/onboard.js';
 //import {getBalance} from '../../node_modules/web3';
 //import { parseEther } from 'ethers/lib/utils';
 
-const shortenAddress = (address) => `${address.slice(0, 6)}...${address.slice(address.length - 4)}`;
+const shortenAddress = (address) => `${address?.slice(0, 6)}...${address.slice(address.length - 4)}`;
 
 const PageHOC = (Component, title, description) => () => {
   const { contract, walletAddress, showAlert, battleGround } = useGlobalContext();
@@ -79,7 +79,7 @@ const PageHOC = (Component, title, description) => () => {
                   </div>
                 </div>
                 <div className="flex p-2 font-bold text-xl items-center">
-                  {shortenAddress(walletAddress)}
+                  {walletAddress?shortenAddress(walletAddress):"..."}
                 </div>
               </div>
             </div>
