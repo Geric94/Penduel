@@ -94,6 +94,7 @@ npx hardhat verify --network fuji --constructor-args ./scripts/args/avaxFuji.js 
 
 # Example of execution with costs
 We used the above balance task above
+[0x94a953f0E05DFb802fa5d07238E9A0e9BaE178B3](https://testnet.snowtrace.io/address/0x94a953f0e05dfb802fa5d07238e9a0e9bae178b3)
 ```shell
 '0x3DaC9D64C9bF82294bFF40F15AbeDa041f5b9Def'    owner       9.538384994345982376 ETH
 '0x6B3161d1ecc56039f107ff1211383068Eb90BbbD'    player1     9.648689368749999999 ETH
